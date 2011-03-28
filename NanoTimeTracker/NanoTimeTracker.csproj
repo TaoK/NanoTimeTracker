@@ -110,7 +110,6 @@
     <Content Include="Icons\Icon-Parts\view-calendar-tasks-32x32.ico" />
     <Content Include="Icons\Icon-Parts\view-calendar-tasks-48x48.ico" />
     <Content Include="Icons\licenses.txt" />
-    <Content Include="README.txt" />
     <EmbeddedResource Include="Icons\view-calendar-tasks-combined.ico" />
     <EmbeddedResource Include="LogWindow.resx">
       <DependentUpon>LogWindow.cs</DependentUpon>
