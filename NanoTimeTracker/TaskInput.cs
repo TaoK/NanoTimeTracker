@@ -29,26 +29,9 @@ namespace NanoTimeTracker
 {
     public partial class TaskInput : Form
     {
-        public TaskInput(DateTime startTime, DateTime? endTime, string taskDescription, string taskCategory)
+        public TaskInput()
         {
             InitializeComponent();
-
-            if (endTime == null)
-            {
-                this.Text = "Task Entry - New Task";
-                lbl_EntryPrompt.Text = string.Format("Details for new task starting at {0:yyyy-MM-dd HH:mm:ss}:", startTime);
-            }
-            else
-            {
-                this.Text = "Task Entry - Confirm Task Details";
-                lbl_EntryPrompt.Text = string.Format("Details for task started at {0:yyyy-MM-dd HH:mm:ss} ({0:0.00} hours):", startTime, endTime.Value.Subtract(startTime).TotalHours);
-            }
-
-            if (taskDescription != null)
-                TaskDescription = taskDescription;
-
-            if (taskCategory != null)
-                TaskCategory = taskCategory;
         }
 
         public string TaskDescription
@@ -61,6 +44,40 @@ namespace NanoTimeTracker
         {
             get { return txt_Category.Text; }
             set { txt_Category.Text = value; }
+        }
+
+        public void SetPrompt(DateTime startTime, DateTime? endTime, string taskDescription, string taskCategory)
+        {
+            if (endTime == null)
+            {
+                this.Text = "Task Entry - New Task";
+                lbl_EntryPrompt.Text = string.Format("Details for new task starting at {0:yyyy-MM-dd HH:mm:ss}:", startTime);
+            }
+            else
+            {
+                this.Text = "Task Entry - Confirm Task Details";
+                lbl_EntryPrompt.Text = string.Format("Details for task started at {0:yyyy-MM-dd HH:mm:ss} (duration: {1:HH:mm:ss}):", startTime, new DateTime(endTime.Value.Subtract(startTime).Ticks));
+            }
+
+            if (taskDescription != null)
+                TaskDescription = taskDescription;
+            else
+                TaskDescription = "";
+
+            if (taskCategory != null)
+                TaskCategory = taskCategory;
+            else
+                TaskCategory = "";
+        }
+
+        private void TaskInput_Load(object sender, EventArgs e)
+        {
+            //grab focus back from the system tray, if necessary
+            WindowHacker.SetForegroundWindow(this.Handle);
+            //for some reason isVisible is false on second call of ShowDialog on the same form
+            this.Show();
+            //make sure we focus the right control
+            txt_Description.Focus();
         }
 
     }

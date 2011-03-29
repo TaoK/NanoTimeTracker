@@ -53,7 +53,7 @@ namespace NanoTimeTracker
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogWindow));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.btn_Start = new System.Windows.Forms.Button();
             this.btn_Stop = new System.Windows.Forms.Button();
             this.timer_StatusUpdate = new System.Windows.Forms.Timer(this.components);
@@ -68,15 +68,15 @@ namespace NanoTimeTracker
             this.btn_DeleteLog = new System.Windows.Forms.Button();
             this.btn_Options = new System.Windows.Forms.Button();
             this.dataGridView_TaskLogList = new System.Windows.Forms.DataGridView();
+            this.dataSet1BindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.dataSet1 = new NanoTimeTracker.DataSet1();
+            this.lbl_TotalWorkingTime = new System.Windows.Forms.Label();
+            this.lbl_BillableWorkingTime = new System.Windows.Forms.Label();
             this.StartDateTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EndDateTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.TaskName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Billable = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.TimeTaken = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataSet1BindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.dataSet1 = new NanoTimeTracker.DataSet1();
-            this.lbl_TotalWorkingTime = new System.Windows.Forms.Label();
-            this.lbl_BillableWorkingTime = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_TaskLogList)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1BindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).BeginInit();
@@ -207,44 +207,6 @@ namespace NanoTimeTracker
             this.dataGridView_TaskLogList.TabIndex = 6;
             this.dataGridView_TaskLogList.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_TaskLogList_CellValueChanged);
             // 
-            // StartDateTime
-            // 
-            this.StartDateTime.DataPropertyName = "StartDateTime";
-            this.StartDateTime.HeaderText = "StartDateTime";
-            this.StartDateTime.Name = "StartDateTime";
-            this.StartDateTime.Width = 120;
-            // 
-            // EndDateTime
-            // 
-            this.EndDateTime.DataPropertyName = "EndDateTime";
-            this.EndDateTime.HeaderText = "EndDateTime";
-            this.EndDateTime.Name = "EndDateTime";
-            this.EndDateTime.Width = 120;
-            // 
-            // TaskName
-            // 
-            this.TaskName.DataPropertyName = "TaskName";
-            this.TaskName.HeaderText = "TaskName";
-            this.TaskName.Name = "TaskName";
-            this.TaskName.Width = 200;
-            // 
-            // Billable
-            // 
-            this.Billable.DataPropertyName = "BillableFlag";
-            this.Billable.HeaderText = "Billable";
-            this.Billable.Name = "Billable";
-            this.Billable.Width = 50;
-            // 
-            // TimeTaken
-            // 
-            this.TimeTaken.DataPropertyName = "TimeTaken";
-            dataGridViewCellStyle2.Format = "N2";
-            dataGridViewCellStyle2.NullValue = null;
-            this.TimeTaken.DefaultCellStyle = dataGridViewCellStyle2;
-            this.TimeTaken.HeaderText = "TimeTaken";
-            this.TimeTaken.Name = "TimeTaken";
-            this.TimeTaken.Width = 80;
-            // 
             // dataSet1BindingSource
             // 
             this.dataSet1BindingSource.DataSource = this.dataSet1;
@@ -268,6 +230,44 @@ namespace NanoTimeTracker
             this.lbl_BillableWorkingTime.Name = "lbl_BillableWorkingTime";
             this.lbl_BillableWorkingTime.Size = new System.Drawing.Size(100, 15);
             this.lbl_BillableWorkingTime.TabIndex = 8;
+            // 
+            // StartDateTime
+            // 
+            this.StartDateTime.DataPropertyName = "StartDateTime";
+            this.StartDateTime.HeaderText = "StartDateTime";
+            this.StartDateTime.Name = "StartDateTime";
+            this.StartDateTime.Width = 130;
+            // 
+            // EndDateTime
+            // 
+            this.EndDateTime.DataPropertyName = "EndDateTime";
+            this.EndDateTime.HeaderText = "EndDateTime";
+            this.EndDateTime.Name = "EndDateTime";
+            this.EndDateTime.Width = 130;
+            // 
+            // TaskName
+            // 
+            this.TaskName.DataPropertyName = "TaskName";
+            this.TaskName.HeaderText = "TaskName";
+            this.TaskName.Name = "TaskName";
+            this.TaskName.Width = 200;
+            // 
+            // Billable
+            // 
+            this.Billable.DataPropertyName = "BillableFlag";
+            this.Billable.HeaderText = "Billable";
+            this.Billable.Name = "Billable";
+            this.Billable.Width = 50;
+            // 
+            // TimeTaken
+            // 
+            this.TimeTaken.DataPropertyName = "TimeTaken";
+            dataGridViewCellStyle1.Format = "N2";
+            dataGridViewCellStyle1.NullValue = null;
+            this.TimeTaken.DefaultCellStyle = dataGridViewCellStyle1;
+            this.TimeTaken.HeaderText = "TimeTaken";
+            this.TimeTaken.Name = "TimeTaken";
+            this.TimeTaken.Width = 80;
             // 
             // LogWindow
             // 

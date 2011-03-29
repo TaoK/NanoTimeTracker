@@ -23,10 +23,8 @@ using System.Runtime.InteropServices;
 
 namespace NanoTimeTracker
 {
-    public static class FormCloseDisabler
+    public static class WindowHacker
     {
-        #region Interop Code for removing close button
-
         private const int SC_CLOSE = 0xF060;
         private const int MF_BYCOMMAND = 0x0;
         private const int MF_GRAYED = 0x1;
@@ -38,9 +36,7 @@ namespace NanoTimeTracker
         [DllImport("user32.dll", SetLastError = true)]
         private static extern int EnableMenuItem(int menu, int ideEnableItem, int enable);
 
-        #endregion
-
-        public static void Disable(Form form)
+        public static void DisableCloseMenu(Form form)
         {
             IntPtr hWnd = form.Handle;
             int SystemMenu = GetSystemMenu(hWnd, 0);
@@ -48,5 +44,8 @@ namespace NanoTimeTracker
             if (PreviousState == -1)
                 throw new Exception("The close menu does not exist");
         }
+
+        [DllImport("user32.dll")]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
     }
 }

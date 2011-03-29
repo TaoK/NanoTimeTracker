@@ -10,6 +10,7 @@ overhead to one click and a task name/description typed in.
 
 This app is not really finished, many enhancements are possible and planned, most 
 notably:
+ - Overlapping time detection (on manual edit)
  - Autocomplete functionality in task name tracking
  - Hotkey functionality
  - Task category tracking
@@ -17,6 +18,7 @@ notably:
  - A more elegant and configurable data persistence mechanism
  - Options screen
  - Simple stats screen, export screen, etc
+ - Computer idle time detection
  
 This application is released under GPLv3: http://www.gnu.org/licenses/gpl.html
 

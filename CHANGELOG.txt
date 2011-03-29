@@ -1,0 +1,16 @@
+Nano TimeTracker change log
+
+
+
+Version 0.9
+-----------
+ - Misc window mgmt fixes (prevent multiple task dialogs, handle initial focus, etc)
+ - Fix tab order in task dialog
+ - Fix task duration display in task dialog
+ - Fix task entries to display seconds in log window
+ - Fix systray baloon message and log window to display current total times
+ 
+
+Version 0.8
+-----------
+ - Initial Release

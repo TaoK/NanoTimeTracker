@@ -44,7 +44,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DataSet1.xsd</DependentUpon>
     </Compile>
-    <Compile Include="FormCloseDisabler.cs" />
+    <Compile Include="WindowHacker.cs" />
     <Compile Include="Icons\IconTypePlaceholder.cs" />
     <Compile Include="LogWindow.cs">
       <SubType>Form</SubType>

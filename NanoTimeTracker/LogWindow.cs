@@ -32,15 +32,19 @@ namespace NanoTimeTracker
         public LogWindow()
         {
             InitializeComponent();
+            dataGridView_TaskLogList.Columns["StartDateTime"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
+            dataGridView_TaskLogList.Columns["EndDateTime"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
+            TaskDialog = new TaskInput();
         }
 
-        private DateTime StartTime;
+        private DateTime CurrentTaskStartTime;
         private string WorkingOnTask = "";
         private bool WorkingBillable = true;
 
         private string LogFilePath;
         private bool LogTopics;
         private bool logByDate;
+        private bool _displayingDialog;
 
         private DateTime CurrentFileDate;
         private double previousHours;
@@ -48,6 +52,7 @@ namespace NanoTimeTracker
 
         private Icon TaskInProgressIcon;
         private Icon NoTaskActiveIcon;
+        private TaskInput TaskDialog;
 
         #region Event Handlers
 
@@ -56,7 +61,7 @@ namespace NanoTimeTracker
             TaskInProgressIcon = new Icon(typeof(Icons.IconTypePlaceholder), "view-calendar-tasks-combined.ico");
             NoTaskActiveIcon = new Icon(typeof(Icons.IconTypePlaceholder), "edit-clear-history-2-combined.ico");
 
-            FormCloseDisabler.Disable(this);
+            WindowHacker.DisableCloseMenu(this);
 
             LogFilePath = Properties.Settings.Default.LogFilePath;
             if (LogFilePath.IndexOf("<DATE>") > 0)
@@ -96,8 +101,8 @@ namespace NanoTimeTracker
         private void LogWindow_Resize(object sender, System.EventArgs e)
         {
             if (this.WindowState == FormWindowState.Minimized)
-                this.Hide();
-            FormCloseDisabler.Disable(this);
+                this.Visible = false;
+            WindowHacker.DisableCloseMenu(this);
         }
 
         private void notifyIcon1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -108,11 +113,21 @@ namespace NanoTimeTracker
 
         private void notifyIcon1_DoubleClick(object sender, System.EventArgs e)
         {
+
             timer_NotifySingleClick.Stop();
             if (this.WindowState == FormWindowState.Minimized)
             {
-                this.Show();
-                WindowState = FormWindowState.Normal;
+                if (TaskDialog.Visible)
+                {
+                    //bring the task dialog to the foreground
+                    WindowHacker.SetForegroundWindow(TaskDialog.Handle);
+                }
+                else
+                {
+                    //no task dialog around, so bring up the main window
+                    this.Show();
+                    WindowState = FormWindowState.Normal;
+                }
             }
             else
             {
@@ -197,151 +212,171 @@ namespace NanoTimeTracker
 
         private void PromptTaskStart()
         {
-            bool doAction;
-            if (LogTopics)
+            //double-check whether we really should be displaying
+            if (!_displayingDialog)
             {
-                this.Activate();
-                TaskInput dlg = new TaskInput(DateTime.Now, null, WorkingOnTask, null);
-                if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                _displayingDialog = true;
+
+                bool doAction;
+                if (LogTopics)
                 {
-                    WorkingOnTask = dlg.TaskDescription;
-                    doAction = true;
+                    //only relevant if we're not minimized, but seems to do no harm.
+                    this.Activate();
+
+                    TaskDialog.SetPrompt(DateTime.Now, null, WorkingOnTask, null);
+                    if (TaskDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        WorkingOnTask = TaskDialog.TaskDescription;
+                        doAction = true;
+                    }
+                    else
+                        doAction = false;
                 }
                 else
-                    doAction = false;
-            }
-            else
-                doAction = true;
+                    doAction = true;
 
-            //in the absence of an appropriate UI
-            WorkingBillable = true;
+                //in the absence of an appropriate UI
+                WorkingBillable = true;
 
-            if (doAction)
-            {
-                //save and switch day if appropriate
-                SaveTimeTrackingDB(true);
+                if (doAction)
+                {
+                    //save and switch day if appropriate
+                    SaveTimeTrackingDB(true);
 
-                //retrieve existing for total display
-                CheckHourTotals();
+                    //retrieve existing for total display
+                    CheckHourTotals();
 
-                //UI Updates
-                btn_Stop.Visible = true;
-                btn_Stop.Focus();
-                menuItem_StopCounting.Enabled = true;
-                btn_Start.Visible = false;
-                menuItem_StartCounting.Enabled = false;
-                notifyIcon1.Icon = TaskInProgressIcon;
-                this.Icon = TaskInProgressIcon;
-                lbl_WorkingTime.Text = "Starting...";
+                    //UI Updates
+                    btn_Stop.Visible = true;
+                    btn_Stop.Focus();
+                    menuItem_StopCounting.Enabled = true;
+                    btn_Start.Visible = false;
+                    menuItem_StartCounting.Enabled = false;
+                    notifyIcon1.Icon = TaskInProgressIcon;
+                    this.Icon = TaskInProgressIcon;
+                    lbl_WorkingTime.Text = "Starting...";
 
-                StartTime = System.DateTime.Now;
+                    CurrentTaskStartTime = System.DateTime.Now;
 
-                //Log task
-                LogText(Utils.ExpandPath(LogFilePath, DateTime.Now, false), String.Format("{0:yyyy-MM-dd HH:mm:ss}", StartTime) + "\t");
+                    //Log task
+                    LogText(Utils.ExpandPath(LogFilePath, DateTime.Now, false), String.Format("{0:yyyy-MM-dd HH:mm:ss}", CurrentTaskStartTime) + "\t");
 
-                DataRow newRow = dataSet1.DataTable1.NewRow();
-                newRow["StartDateTime"] = StartTime;
-                if (WorkingOnTask != "") newRow["TaskName"] = WorkingOnTask;
-                newRow["BillableFlag"] = WorkingBillable;
-                dataSet1.DataTable1.Rows.Add(newRow);
-                SaveTimeTrackingDB();
+                    DataRow newRow = dataSet1.DataTable1.NewRow();
+                    newRow["StartDateTime"] = CurrentTaskStartTime;
+                    if (WorkingOnTask != "") newRow["TaskName"] = WorkingOnTask;
+                    newRow["BillableFlag"] = WorkingBillable;
+                    dataSet1.DataTable1.Rows.Add(newRow);
+                    SaveTimeTrackingDB();
 
-                //LogBox
-                txt_LogBox.Text = txt_LogBox.Text + "Starting... " + StartTime.ToString() + ";";
-                if (WorkingOnTask != "") txt_LogBox.Text = txt_LogBox.Text + " " + WorkingOnTask;
-                txt_LogBox.Text = txt_LogBox.Text + " \u000D\u000A";
+                    //LogBox
+                    txt_LogBox.Text = txt_LogBox.Text + "Starting... " + CurrentTaskStartTime.ToString() + ";";
+                    if (WorkingOnTask != "") txt_LogBox.Text = txt_LogBox.Text + " " + WorkingOnTask;
+                    txt_LogBox.Text = txt_LogBox.Text + " \u000D\u000A";
 
-                //display timer...
-                timer_StatusUpdate.Start();
+                    //display timer...
+                    timer_StatusUpdate.Start();
+                }
+
+                _displayingDialog = false;
             }
         }
 
         private void PromptTaskEnd()
         {
-            bool doAction;
-
-            if (LogTopics)
+            //double-check whether we really should be displaying
+            if (!_displayingDialog)
             {
-                this.Activate();
-                TaskInput dlg = new TaskInput(StartTime, DateTime.Now, WorkingOnTask, null);
-                if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                _displayingDialog = true;
+
+                bool doAction;
+
+                if (LogTopics)
                 {
-                    WorkingOnTask = dlg.TaskDescription;
+                    //only relevant if we're not minimized, but seems to do no harm.
+                    this.Activate();
+
+                    TaskDialog.SetPrompt(CurrentTaskStartTime, DateTime.Now, WorkingOnTask, null);
+                    if (TaskDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        WorkingOnTask = TaskDialog.TaskDescription;
+                        doAction = true;
+                    }
+                    else
+                        doAction = false;
+                }
+                else
                     doAction = true;
-                }
-                else
-                    doAction = false;
-            }
-            else
-                doAction = true;
 
-            if (doAction)
-            {
-                //UI updates
-                btn_Stop.Visible = false;
-                menuItem_StopCounting.Enabled = false;
-                btn_Start.Visible = true;
-                btn_Start.Focus();
-                menuItem_StartCounting.Enabled = true;
-                notifyIcon1.Icon = NoTaskActiveIcon;
-                this.Icon = NoTaskActiveIcon;
-                notifyIcon1.Text = "Time Logger";
-
-                DateTime EndTime = DateTime.Now;
-
-                //Log action...
-                LogText(Utils.ExpandPath(LogFilePath, DateTime.Now, false), String.Format("{0:yyyy-MM-dd HH:mm:ss}", EndTime) + "\t" + String.Format("{0:0.00}", EndTime.Subtract(StartTime).TotalHours) + "\t" + WorkingOnTask + "\u000D\u000A");
-
-                DataRow[] rowToClose = dataSet1.DataTable1.Select("StartDateTime = #" + StartTime.ToString() + "#");
-                if (rowToClose.Length == 0)
-                    rowToClose = dataSet1.DataTable1.Select("StartDateTime Is Not Null And EndDateTime Is Null", "StartDateTime Desc");
-                if (rowToClose.Length > 0)
+                if (doAction)
                 {
-                    DateTime realStartedTime = (DateTime)rowToClose[0]["StartDateTime"];
-                    if (rowToClose.Length > 1)
-                        MessageBox.Show("More than one unfinished task found. Using more recent one: " + String.Format("{0:yyyy-MM-dd HH:mm:ss}", EndTime), "Multiple log entries", MessageBoxButtons.OK);
-                    rowToClose[0]["EndDateTime"] = EndTime;
-                    rowToClose[0]["TaskName"] = WorkingOnTask;
-                    rowToClose[0]["BillableFlag"] = WorkingBillable;
-                    rowToClose[0]["TimeTaken"] = EndTime.Subtract(realStartedTime).TotalHours;
+                    //UI updates
+                    btn_Stop.Visible = false;
+                    menuItem_StopCounting.Enabled = false;
+                    btn_Start.Visible = true;
+                    btn_Start.Focus();
+                    menuItem_StartCounting.Enabled = true;
+                    notifyIcon1.Icon = NoTaskActiveIcon;
+                    this.Icon = NoTaskActiveIcon;
+                    notifyIcon1.Text = "Time Logger";
 
-                    //save and switch day if appropriate
-                    SaveTimeTrackingDB(true);
+                    DateTime EndTime = DateTime.Now;
+
+                    //Log action...
+                    LogText(Utils.ExpandPath(LogFilePath, DateTime.Now, false), String.Format("{0:yyyy-MM-dd HH:mm:ss}", EndTime) + "\t" + String.Format("{0:0.00}", EndTime.Subtract(CurrentTaskStartTime).TotalHours) + "\t" + WorkingOnTask + "\u000D\u000A");
+
+                    DataRow[] rowToClose = dataSet1.DataTable1.Select("StartDateTime = #" + CurrentTaskStartTime.ToString() + "#");
+                    if (rowToClose.Length == 0)
+                        rowToClose = dataSet1.DataTable1.Select("StartDateTime Is Not Null And EndDateTime Is Null", "StartDateTime Desc");
+                    if (rowToClose.Length > 0)
+                    {
+                        DateTime realStartedTime = (DateTime)rowToClose[0]["StartDateTime"];
+                        if (rowToClose.Length > 1)
+                            MessageBox.Show("More than one unfinished task found. Using more recent one: " + String.Format("{0:yyyy-MM-dd HH:mm:ss}", EndTime), "Multiple log entries", MessageBoxButtons.OK);
+                        rowToClose[0]["EndDateTime"] = EndTime;
+                        rowToClose[0]["TaskName"] = WorkingOnTask;
+                        rowToClose[0]["BillableFlag"] = WorkingBillable;
+                        rowToClose[0]["TimeTaken"] = EndTime.Subtract(realStartedTime).TotalHours;
+
+                        //save and switch day if appropriate
+                        SaveTimeTrackingDB(true);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Could not find log entry to complete! Task Lost.", "Missing log entry", MessageBoxButtons.OK);
+                    }
+
+                    //Textbox display...
+                    txt_LogBox.Text = txt_LogBox.Text + "Stopping... " + System.DateTime.Now.ToString() + ";";
+                    if (WorkingOnTask != "") txt_LogBox.Text = txt_LogBox.Text + " " + WorkingOnTask;
+                    txt_LogBox.Text = txt_LogBox.Text + " \u000D\u000A";
+
+                    //display timer...
+                    timer_StatusUpdate.Stop();
                 }
-                else
-                {
-                    MessageBox.Show("Could not find log entry to complete! Task Lost.", "Missing log entry", MessageBoxButtons.OK);
-                }
 
-                //Textbox display...
-                txt_LogBox.Text = txt_LogBox.Text + "Stopping... " + System.DateTime.Now.ToString() + ";";
-                if (WorkingOnTask != "") txt_LogBox.Text = txt_LogBox.Text + " " + WorkingOnTask;
-                txt_LogBox.Text = txt_LogBox.Text + " \u000D\u000A";
-
-                //display timer...
-                timer_StatusUpdate.Stop();
+                _displayingDialog = false;
             }
         }
 
         private void UpdateStatusDisplay()
         {
-            System.TimeSpan TimeSinceStart;
+            System.TimeSpan TimeSinceTaskStart;
             System.TimeSpan TotalTimeToday;
             System.TimeSpan TotalBillableTimeToday;
-            String FriendlyTimeSinceStart;
+            String FriendlyTimeSinceTaskStart;
             String FriendlyTimeToday;
             String FriendlyBillableTimeToday;
-            TimeSinceStart = System.DateTime.Now.Subtract(StartTime);
-            TotalTimeToday = TimeSinceStart + new TimeSpan((int)Math.Floor(previousHours), (int)Math.Floor(previousHours * 60), (int)Math.Floor(previousHours * (60 * 60)));
-            TotalBillableTimeToday = TimeSinceStart + new TimeSpan((int)Math.Floor(previousBillableHours), (int)Math.Floor(previousBillableHours * 60), (int)Math.Floor(previousBillableHours * (60 * 60)));
-            FriendlyTimeSinceStart = String.Format("{0:00}", TimeSinceStart.Hours) + ":" + String.Format("{0:00}", TimeSinceStart.Minutes) + ":" + String.Format("{0:00}", TimeSinceStart.Seconds);
+            TimeSinceTaskStart = System.DateTime.Now.Subtract(CurrentTaskStartTime);
+            TotalTimeToday = TimeSinceTaskStart + new TimeSpan((int)Math.Floor(previousHours), (int)Math.Floor((previousHours * 60) % 60), (int)Math.Floor((previousHours * 60 * 60) % 60));
+            TotalBillableTimeToday = TimeSinceTaskStart + new TimeSpan((int)Math.Floor(previousBillableHours), (int)Math.Floor((previousBillableHours * 60) % 60), (int)Math.Floor((previousBillableHours * 60 * 60) % 60));
+            FriendlyTimeSinceTaskStart = String.Format("{0:00}", TimeSinceTaskStart.Hours) + ":" + String.Format("{0:00}", TimeSinceTaskStart.Minutes) + ":" + String.Format("{0:00}", TimeSinceTaskStart.Seconds);
             FriendlyTimeToday = String.Format("{0:00}", TotalTimeToday.Hours) + ":" + String.Format("{0:00}", TotalTimeToday.Minutes) + ":" + String.Format("{0:00}", TotalTimeToday.Seconds);
             FriendlyBillableTimeToday = String.Format("{0:00}", TotalBillableTimeToday.Hours) + ":" + String.Format("{0:00}", TotalBillableTimeToday.Minutes) + ":" + String.Format("{0:00}", TotalBillableTimeToday.Seconds);
 
-            lbl_WorkingTime.Text = FriendlyTimeSinceStart;
+            lbl_WorkingTime.Text = FriendlyTimeSinceTaskStart;
             lbl_TotalWorkingTime.Text = FriendlyTimeToday;
             lbl_BillableWorkingTime.Text = FriendlyBillableTimeToday;
-            notifyIcon1.Text = "Time Logger - " + FriendlyTimeSinceStart;
+            notifyIcon1.Text = "Time Logger - " + FriendlyTimeSinceTaskStart;
         }
 
         #endregion
@@ -366,7 +401,7 @@ namespace NanoTimeTracker
                 if (lastRow["EndDateTime"] == DBNull.Value)
                 {
                     //set running state in app
-                    StartTime = (DateTime)lastRow["StartDateTime"];
+                    CurrentTaskStartTime = (DateTime)lastRow["StartDateTime"];
                     if (lastRow["TaskName"] != DBNull.Value)
                         WorkingOnTask = (string)lastRow["TaskName"];
                     WorkingBillable = (bool)lastRow["BillableFlag"];
@@ -500,5 +535,6 @@ namespace NanoTimeTracker
         }
 
         #endregion
+
     }
 }

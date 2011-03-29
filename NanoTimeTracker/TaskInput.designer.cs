@@ -76,7 +76,7 @@ namespace NanoTimeTracker
             this.btn_OK.Location = new System.Drawing.Point(216, 153);
             this.btn_OK.Name = "btn_OK";
             this.btn_OK.Size = new System.Drawing.Size(75, 23);
-            this.btn_OK.TabIndex = 1;
+            this.btn_OK.TabIndex = 2;
             this.btn_OK.Text = "OK";
             this.btn_OK.UseVisualStyleBackColor = true;
             // 
@@ -87,7 +87,7 @@ namespace NanoTimeTracker
             this.btn_Cancel.Location = new System.Drawing.Point(297, 153);
             this.btn_Cancel.Name = "btn_Cancel";
             this.btn_Cancel.Size = new System.Drawing.Size(75, 23);
-            this.btn_Cancel.TabIndex = 2;
+            this.btn_Cancel.TabIndex = 3;
             this.btn_Cancel.Text = "Cancel";
             this.btn_Cancel.UseVisualStyleBackColor = true;
             // 
@@ -112,12 +112,14 @@ namespace NanoTimeTracker
             // 
             // txt_Category
             // 
+            this.txt_Category.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.txt_Category.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.txt_Category.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.txt_Category.Location = new System.Drawing.Point(83, 112);
             this.txt_Category.Name = "txt_Category";
             this.txt_Category.Size = new System.Drawing.Size(289, 20);
-            this.txt_Category.TabIndex = 6;
+            this.txt_Category.TabIndex = 1;
             // 
             // lbl_EntryPrompt
             // 
@@ -144,6 +146,7 @@ namespace NanoTimeTracker
             this.MinimumSize = new System.Drawing.Size(243, 174);
             this.Name = "TaskInput";
             this.Text = "Task Entry";
+            this.Load += new System.EventHandler(this.TaskInput_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
