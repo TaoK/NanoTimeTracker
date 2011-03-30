@@ -111,6 +111,11 @@ namespace NanoTimeTracker
                 timer_NotifySingleClick.Start();
         }
 
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+        }
+
         private void notifyIcon1_DoubleClick(object sender, System.EventArgs e)
         {
 
@@ -154,7 +159,12 @@ namespace NanoTimeTracker
             this.Close();
         }
 
-        private void btn_DeleteLog_Click(object sender, System.EventArgs e)
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void deleteLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string caption = "Confirm Delete";
             DialogResult result;
@@ -179,7 +189,7 @@ namespace NanoTimeTracker
             }
         }
 
-        private void btn_Options_Click(object sender, System.EventArgs e)
+        private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //TODO: IMPLEMENT OPTIONS FORM 
 
@@ -203,6 +213,13 @@ namespace NanoTimeTracker
 
             //persist changes
             SaveTimeTrackingDB();
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutBox box = new AboutBox();
+            box.ShowDialog();
+            box.Dispose();
         }
 
         #endregion
@@ -247,14 +264,14 @@ namespace NanoTimeTracker
                     CheckHourTotals();
 
                     //UI Updates
-                    btn_Stop.Visible = true;
+                    btn_Stop.Enabled = true;
                     btn_Stop.Focus();
                     menuItem_StopCounting.Enabled = true;
-                    btn_Start.Visible = false;
+                    btn_Start.Enabled = false;
                     menuItem_StartCounting.Enabled = false;
                     notifyIcon1.Icon = TaskInProgressIcon;
                     this.Icon = TaskInProgressIcon;
-                    lbl_WorkingTime.Text = "Starting...";
+                    lbl_WorkingTimeValue.Text = "Starting...";
 
                     CurrentTaskStartTime = System.DateTime.Now;
 
@@ -310,9 +327,9 @@ namespace NanoTimeTracker
                 if (doAction)
                 {
                     //UI updates
-                    btn_Stop.Visible = false;
+                    btn_Stop.Enabled = false;
                     menuItem_StopCounting.Enabled = false;
-                    btn_Start.Visible = true;
+                    btn_Start.Enabled = true;
                     btn_Start.Focus();
                     menuItem_StartCounting.Enabled = true;
                     notifyIcon1.Icon = NoTaskActiveIcon;
@@ -373,9 +390,9 @@ namespace NanoTimeTracker
             FriendlyTimeToday = String.Format("{0:00}", TotalTimeToday.Hours) + ":" + String.Format("{0:00}", TotalTimeToday.Minutes) + ":" + String.Format("{0:00}", TotalTimeToday.Seconds);
             FriendlyBillableTimeToday = String.Format("{0:00}", TotalBillableTimeToday.Hours) + ":" + String.Format("{0:00}", TotalBillableTimeToday.Minutes) + ":" + String.Format("{0:00}", TotalBillableTimeToday.Seconds);
 
-            lbl_WorkingTime.Text = FriendlyTimeSinceTaskStart;
-            lbl_TotalWorkingTime.Text = FriendlyTimeToday;
-            lbl_BillableWorkingTime.Text = FriendlyBillableTimeToday;
+            lbl_WorkingTimeValue.Text = FriendlyTimeSinceTaskStart;
+            lbl_TimeTodayValue.Text = FriendlyTimeToday;
+            lbl_BillableTimeTodayValue.Text = FriendlyBillableTimeToday;
             notifyIcon1.Text = "Time Logger - " + FriendlyTimeSinceTaskStart;
         }
 
@@ -413,7 +430,7 @@ namespace NanoTimeTracker
                     menuItem_StartCounting.Enabled = false;
                     notifyIcon1.Icon = TaskInProgressIcon;
                     this.Icon = TaskInProgressIcon;
-                    lbl_WorkingTime.Text = "Recovering to Running...";
+                    lbl_WorkingTimeValue.Text = "Recovering to Running...";
 
                     //display timer...
                     timer_StatusUpdate.Start();

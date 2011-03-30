@@ -1,6 +1,10 @@
 Nano TimeTracker change log
 
-
+Version 0.9.1
+-----------
+ - Cleaned up UI to use menus
+ - Added about box with GPL license details
+ 
 
 Version 0.9
 -----------
