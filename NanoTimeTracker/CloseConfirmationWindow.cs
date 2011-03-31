@@ -14,5 +14,13 @@ namespace NanoTimeTracker
         {
             InitializeComponent();
         }
+
+        public bool DontShowAgain
+        {
+            get
+            {
+                return chk_DontShowAgain.Checked;
+            }
+        }
     }
 }

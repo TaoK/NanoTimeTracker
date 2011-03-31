@@ -62,8 +62,6 @@ namespace NanoTimeTracker
             TaskInProgressIcon = new Icon(typeof(Icons.IconTypePlaceholder), "view-calendar-tasks-combined.ico");
             NoTaskActiveIcon = new Icon(typeof(Icons.IconTypePlaceholder), "edit-clear-history-2-combined.ico");
 
-            WindowHacker.DisableCloseMenu(this);
-
             LogFilePath = Properties.Settings.Default.LogFilePath;
             if (LogFilePath.IndexOf("<DATE>") > 0)
                 logByDate = true;
@@ -73,12 +71,22 @@ namespace NanoTimeTracker
                 LogTopics = true;
 
             InitializeData();
-
             UpdateControlDisplayConsistency();
+        }
+
+        private void LogWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+                LogWindowClose();
+            }
         }
 
         private void LogWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            //WANT TO DO: avoid exit (do close) if clicked the exit button
+            // -> Might need to handle exit differently? All state outside the window?
             if (timer_StatusUpdate.Enabled == true)
             {
                 PromptTaskEnd();
@@ -132,17 +140,12 @@ namespace NanoTimeTracker
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            /*
-            CloseConfirmationWindow closeDialog = new CloseConfirmationWindow();
-            closeDialog.ShowDialog();
-            closeDialog.Dispose();
-             */
-            this.WindowState = FormWindowState.Minimized;
+            LogWindowClose();
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Application.Exit();
         }
 
         private void deleteLogToolStripMenuItem_Click(object sender, EventArgs e)
@@ -205,7 +208,7 @@ namespace NanoTimeTracker
 
         private void onlineHelpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //TODO: implement URL Launch to http://www.architectshack.com/NanoTimeTracker.ashx
+            System.Diagnostics.Process.Start("http://www.architectshack.com/NanoTimeTracker.ashx");
         }
 
         private void openLogWindowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -225,7 +228,7 @@ namespace NanoTimeTracker
 
         private void exitToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Application.Exit();
         }
 
         #endregion
@@ -233,21 +236,33 @@ namespace NanoTimeTracker
 
         #region Local Methods
 
+        private void LogWindowClose()
+        {
+            if (!Properties.Settings.Default.HideCloseWarning)
+            {
+                CloseConfirmationWindow closeDialog = new CloseConfirmationWindow();
+                closeDialog.ShowDialog();
+                if (closeDialog.DontShowAgain)
+                {
+                    Properties.Settings.Default.HideCloseWarning = true;
+                    Properties.Settings.Default.Save();
+                }
+                closeDialog.Dispose();
+            }
+            this.Hide();
+        }
+
         private void UpdateControlDisplayConsistency()
         {
-            //task bar hiding
-            if (this.WindowState == FormWindowState.Minimized && this.Visible)
-                this.Visible = false;
-
-            //"Open Log Window" contex strip option display
-            if (this.WindowState != FormWindowState.Minimized && openLogWindowToolStripMenuItem.Enabled)
+            //"Open Log Window" context strip option display
+            if (this.Visible && openLogWindowToolStripMenuItem.Enabled)
                 openLogWindowToolStripMenuItem.Enabled = false;
+
+            if (!this.Visible && !_displayingDialog && !openLogWindowToolStripMenuItem.Enabled)
+                openLogWindowToolStripMenuItem.Enabled = true;
 
             if (_displayingDialog && openLogWindowToolStripMenuItem.Enabled)
                 openLogWindowToolStripMenuItem.Enabled = false;
-
-            if (this.WindowState == FormWindowState.Minimized && !_displayingDialog && !openLogWindowToolStripMenuItem.Enabled)
-                openLogWindowToolStripMenuItem.Enabled = true;
 
             //buttons
             if (_taskInProgress && btn_Start.Enabled)
@@ -287,13 +302,13 @@ namespace NanoTimeTracker
                 notifyIcon1.Text = "Nano TimeLogger - no active task";
 
             //TODO: determine when this actually needs to be set (just initial load??)
-            WindowHacker.DisableCloseMenu(this);
+            //WindowHacker.DisableCloseMenu(this);
         }
 
         private void ToggleLogWindowDisplay()
         {
             timer_NotifySingleClick.Stop();
-            if (this.WindowState == FormWindowState.Minimized)
+            if (!this.Visible)
             {
                 if (TaskDialog.Visible)
                 {
@@ -304,13 +319,13 @@ namespace NanoTimeTracker
                 {
                     //no task dialog around, so bring up the main window
                     this.Show();
-                    WindowState = FormWindowState.Normal;
+                    if (this.WindowState == FormWindowState.Minimized)
+                        this.WindowState = FormWindowState.Normal;
                 }
             }
             else
             {
                 this.Hide();
-                WindowState = FormWindowState.Minimized;
             }
         }
 

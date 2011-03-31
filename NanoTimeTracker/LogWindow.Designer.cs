@@ -162,7 +162,7 @@ namespace NanoTimeTracker
             this.stopEditTaskToolStripMenuItem,
             this.exitToolStripMenuItem1});
             this.contextMenuStrip_SysTrayContext.Name = "contextMenuStrip_SysTrayContext";
-            this.contextMenuStrip_SysTrayContext.Size = new System.Drawing.Size(183, 114);
+            this.contextMenuStrip_SysTrayContext.Size = new System.Drawing.Size(183, 92);
             // 
             // openLogWindowToolStripMenuItem
             // 
@@ -427,7 +427,7 @@ namespace NanoTimeTracker
             this.Name = "LogWindow";
             this.Text = "LogWindow";
             this.Load += new System.EventHandler(this.LogWindow_Load);
-            this.Closing += new System.ComponentModel.CancelEventHandler(this.LogWindow_Closing);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LogWindow_FormClosing);
             this.Resize += new System.EventHandler(this.LogWindow_Resize);
             this.contextMenuStrip_SysTrayContext.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_TaskLogList)).EndInit();
