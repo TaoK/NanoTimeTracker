@@ -37,7 +37,7 @@ namespace NanoTimeTracker
             TaskDialog = new TaskInput();
         }
 
-        private DateTime CurrentTaskStartTime;
+        private DateTime _taskInProgressStartTime;
         private string WorkingOnTask = "";
         private bool WorkingBillable = true;
 
@@ -45,6 +45,7 @@ namespace NanoTimeTracker
         private bool LogTopics;
         private bool logByDate;
         private bool _displayingDialog;
+        private bool _taskInProgress;
 
         private DateTime CurrentFileDate;
         private double previousHours;
@@ -72,6 +73,8 @@ namespace NanoTimeTracker
                 LogTopics = true;
 
             InitializeData();
+
+            UpdateControlDisplayConsistency();
         }
 
         private void LogWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -100,9 +103,7 @@ namespace NanoTimeTracker
 
         private void LogWindow_Resize(object sender, System.EventArgs e)
         {
-            if (this.WindowState == FormWindowState.Minimized)
-                this.Visible = false;
-            WindowHacker.DisableCloseMenu(this);
+            UpdateControlDisplayConsistency();
         }
 
         private void notifyIcon1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -111,34 +112,9 @@ namespace NanoTimeTracker
                 timer_NotifySingleClick.Start();
         }
 
-        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            this.WindowState = FormWindowState.Minimized;
-        }
-
         private void notifyIcon1_DoubleClick(object sender, System.EventArgs e)
         {
-
-            timer_NotifySingleClick.Stop();
-            if (this.WindowState == FormWindowState.Minimized)
-            {
-                if (TaskDialog.Visible)
-                {
-                    //bring the task dialog to the foreground
-                    WindowHacker.SetForegroundWindow(TaskDialog.Handle);
-                }
-                else
-                {
-                    //no task dialog around, so bring up the main window
-                    this.Show();
-                    WindowState = FormWindowState.Normal;
-                }
-            }
-            else
-            {
-                this.Hide();
-                WindowState = FormWindowState.Minimized;
-            }
+            ToggleLogWindowDisplay();
         }
 
         private void timer_NotifySingleClick_Tick(object sender, System.EventArgs e)
@@ -154,9 +130,14 @@ namespace NanoTimeTracker
             }
         }
 
-        private void menuItem_Quit_Click(object sender, System.EventArgs e)
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.Close();
+            /*
+            CloseConfirmationWindow closeDialog = new CloseConfirmationWindow();
+            closeDialog.ShowDialog();
+            closeDialog.Dispose();
+             */
+            this.WindowState = FormWindowState.Minimized;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -222,10 +203,116 @@ namespace NanoTimeTracker
             box.Dispose();
         }
 
+        private void onlineHelpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //TODO: implement URL Launch to http://www.architectshack.com/NanoTimeTracker.ashx
+        }
+
+        private void openLogWindowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ToggleLogWindowDisplay();
+        }
+
+        private void startTaskToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PromptTaskStart();
+        }
+
+        private void stopEditTaskToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PromptTaskEnd();
+        }
+
+        private void exitToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
         #endregion
 
 
         #region Local Methods
+
+        private void UpdateControlDisplayConsistency()
+        {
+            //task bar hiding
+            if (this.WindowState == FormWindowState.Minimized && this.Visible)
+                this.Visible = false;
+
+            //"Open Log Window" contex strip option display
+            if (this.WindowState != FormWindowState.Minimized && openLogWindowToolStripMenuItem.Enabled)
+                openLogWindowToolStripMenuItem.Enabled = false;
+
+            if (_displayingDialog && openLogWindowToolStripMenuItem.Enabled)
+                openLogWindowToolStripMenuItem.Enabled = false;
+
+            if (this.WindowState == FormWindowState.Minimized && !_displayingDialog && !openLogWindowToolStripMenuItem.Enabled)
+                openLogWindowToolStripMenuItem.Enabled = true;
+
+            //buttons
+            if (_taskInProgress && btn_Start.Enabled)
+                btn_Start.Enabled = false;
+            else if (!_taskInProgress && !btn_Start.Enabled)
+                btn_Start.Enabled = true;
+
+            if (!_taskInProgress && btn_Stop.Enabled)
+                btn_Stop.Enabled = false;
+            else if (_taskInProgress && !btn_Stop.Enabled)
+                btn_Stop.Enabled = true;
+
+            //context strips
+            if (_taskInProgress && startTaskToolStripMenuItem.Enabled)
+                startTaskToolStripMenuItem.Enabled = false;
+            else if (!_taskInProgress && !startTaskToolStripMenuItem.Enabled)
+                startTaskToolStripMenuItem.Enabled = true;
+
+            if (!_taskInProgress && stopEditTaskToolStripMenuItem.Enabled)
+                stopEditTaskToolStripMenuItem.Enabled = false;
+            else if (_taskInProgress && !stopEditTaskToolStripMenuItem.Enabled)
+                stopEditTaskToolStripMenuItem.Enabled = true;
+
+            //icons
+            if (_taskInProgress && notifyIcon1.Icon != TaskInProgressIcon)
+                notifyIcon1.Icon = TaskInProgressIcon;
+            else if (!_taskInProgress && notifyIcon1.Icon != NoTaskActiveIcon)
+                notifyIcon1.Icon = NoTaskActiveIcon;
+            
+            if (_taskInProgress && this.Icon != TaskInProgressIcon)
+                this.Icon = TaskInProgressIcon;
+            else if (!_taskInProgress && this.Icon != NoTaskActiveIcon)
+                this.Icon = NoTaskActiveIcon;
+
+            //SysTray Balloon
+            if (!_taskInProgress && !notifyIcon1.Text.Equals("Nano TimeLogger - no active task"))
+                notifyIcon1.Text = "Nano TimeLogger - no active task";
+
+            //TODO: determine when this actually needs to be set (just initial load??)
+            WindowHacker.DisableCloseMenu(this);
+        }
+
+        private void ToggleLogWindowDisplay()
+        {
+            timer_NotifySingleClick.Stop();
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                if (TaskDialog.Visible)
+                {
+                    //bring the task dialog to the foreground
+                    WindowHacker.SetForegroundWindow(TaskDialog.Handle);
+                }
+                else
+                {
+                    //no task dialog around, so bring up the main window
+                    this.Show();
+                    WindowState = FormWindowState.Normal;
+                }
+            }
+            else
+            {
+                this.Hide();
+                WindowState = FormWindowState.Minimized;
+            }
+        }
 
         private void PromptTaskStart()
         {
@@ -233,6 +320,7 @@ namespace NanoTimeTracker
             if (!_displayingDialog)
             {
                 _displayingDialog = true;
+                UpdateControlDisplayConsistency();
 
                 bool doAction;
                 if (LogTopics)
@@ -263,38 +351,34 @@ namespace NanoTimeTracker
                     //retrieve existing for total display
                     CheckHourTotals();
 
-                    //UI Updates
-                    btn_Stop.Enabled = true;
-                    btn_Stop.Focus();
-                    menuItem_StopCounting.Enabled = true;
-                    btn_Start.Enabled = false;
-                    menuItem_StartCounting.Enabled = false;
-                    notifyIcon1.Icon = TaskInProgressIcon;
-                    this.Icon = TaskInProgressIcon;
-                    lbl_WorkingTimeValue.Text = "Starting...";
-
-                    CurrentTaskStartTime = System.DateTime.Now;
+                    //set started state
+                    _taskInProgress = true;
+                    _taskInProgressStartTime = System.DateTime.Now;
 
                     //Log task
-                    LogText(Utils.ExpandPath(LogFilePath, DateTime.Now, false), String.Format("{0:yyyy-MM-dd HH:mm:ss}", CurrentTaskStartTime) + "\t");
+                    LogText(Utils.ExpandPath(LogFilePath, DateTime.Now, false), String.Format("{0:yyyy-MM-dd HH:mm:ss}", _taskInProgressStartTime) + "\t");
 
+                    //start tracking new task in DB
                     DataRow newRow = dataSet1.DataTable1.NewRow();
-                    newRow["StartDateTime"] = CurrentTaskStartTime;
+                    newRow["StartDateTime"] = _taskInProgressStartTime;
                     if (WorkingOnTask != "") newRow["TaskName"] = WorkingOnTask;
                     newRow["BillableFlag"] = WorkingBillable;
                     dataSet1.DataTable1.Rows.Add(newRow);
                     SaveTimeTrackingDB();
 
                     //LogBox
-                    txt_LogBox.Text = txt_LogBox.Text + "Starting... " + CurrentTaskStartTime.ToString() + ";";
+                    txt_LogBox.Text = txt_LogBox.Text + "Starting... " + _taskInProgressStartTime.ToString() + ";";
                     if (WorkingOnTask != "") txt_LogBox.Text = txt_LogBox.Text + " " + WorkingOnTask;
                     txt_LogBox.Text = txt_LogBox.Text + " \u000D\u000A";
 
                     //display timer...
+                    lbl_WorkingTimeValue.Text = "Starting...";
                     timer_StatusUpdate.Start();
                 }
 
+                //release dialog "lock" and update display
                 _displayingDialog = false;
+                UpdateControlDisplayConsistency();
             }
         }
 
@@ -304,15 +388,17 @@ namespace NanoTimeTracker
             if (!_displayingDialog)
             {
                 _displayingDialog = true;
+                UpdateControlDisplayConsistency();
 
                 bool doAction;
+                DateTime taskEndTime = DateTime.Now;
 
                 if (LogTopics)
                 {
                     //only relevant if we're not minimized, but seems to do no harm.
                     this.Activate();
 
-                    TaskDialog.SetPrompt(CurrentTaskStartTime, DateTime.Now, WorkingOnTask, null);
+                    TaskDialog.SetPrompt(_taskInProgressStartTime, taskEndTime, WorkingOnTask, null);
                     if (TaskDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                     {
                         WorkingOnTask = TaskDialog.TaskDescription;
@@ -326,33 +412,21 @@ namespace NanoTimeTracker
 
                 if (doAction)
                 {
-                    //UI updates
-                    btn_Stop.Enabled = false;
-                    menuItem_StopCounting.Enabled = false;
-                    btn_Start.Enabled = true;
-                    btn_Start.Focus();
-                    menuItem_StartCounting.Enabled = true;
-                    notifyIcon1.Icon = NoTaskActiveIcon;
-                    this.Icon = NoTaskActiveIcon;
-                    notifyIcon1.Text = "Time Logger";
-
-                    DateTime EndTime = DateTime.Now;
-
                     //Log action...
-                    LogText(Utils.ExpandPath(LogFilePath, DateTime.Now, false), String.Format("{0:yyyy-MM-dd HH:mm:ss}", EndTime) + "\t" + String.Format("{0:0.00}", EndTime.Subtract(CurrentTaskStartTime).TotalHours) + "\t" + WorkingOnTask + "\u000D\u000A");
+                    LogText(Utils.ExpandPath(LogFilePath, _taskInProgressStartTime, false), String.Format("{0:yyyy-MM-dd HH:mm:ss}", taskEndTime) + "\t" + String.Format("{0:0.00}", taskEndTime.Subtract(_taskInProgressStartTime).TotalHours) + "\t" + WorkingOnTask + "\u000D\u000A");
 
-                    DataRow[] rowToClose = dataSet1.DataTable1.Select("StartDateTime = #" + CurrentTaskStartTime.ToString() + "#");
+                    DataRow[] rowToClose = dataSet1.DataTable1.Select("StartDateTime = #" + _taskInProgressStartTime.ToString() + "#");
                     if (rowToClose.Length == 0)
                         rowToClose = dataSet1.DataTable1.Select("StartDateTime Is Not Null And EndDateTime Is Null", "StartDateTime Desc");
                     if (rowToClose.Length > 0)
                     {
                         DateTime realStartedTime = (DateTime)rowToClose[0]["StartDateTime"];
                         if (rowToClose.Length > 1)
-                            MessageBox.Show("More than one unfinished task found. Using more recent one: " + String.Format("{0:yyyy-MM-dd HH:mm:ss}", EndTime), "Multiple log entries", MessageBoxButtons.OK);
-                        rowToClose[0]["EndDateTime"] = EndTime;
+                            MessageBox.Show("More than one unfinished task found. Using more recent one: " + String.Format("{0:yyyy-MM-dd HH:mm:ss}", taskEndTime), "Multiple log entries", MessageBoxButtons.OK);
+                        rowToClose[0]["EndDateTime"] = taskEndTime;
                         rowToClose[0]["TaskName"] = WorkingOnTask;
                         rowToClose[0]["BillableFlag"] = WorkingBillable;
-                        rowToClose[0]["TimeTaken"] = EndTime.Subtract(realStartedTime).TotalHours;
+                        rowToClose[0]["TimeTaken"] = taskEndTime.Subtract(realStartedTime).TotalHours;
 
                         //save and switch day if appropriate
                         SaveTimeTrackingDB(true);
@@ -369,9 +443,15 @@ namespace NanoTimeTracker
 
                     //display timer...
                     timer_StatusUpdate.Stop();
+                    lbl_WorkingTimeValue.Text = "00:00:00";
+
+                    //status flag
+                    _taskInProgress = false;
                 }
 
+                //release dialog "lock" and update display
                 _displayingDialog = false;
+                UpdateControlDisplayConsistency();
             }
         }
 
@@ -383,7 +463,7 @@ namespace NanoTimeTracker
             String FriendlyTimeSinceTaskStart;
             String FriendlyTimeToday;
             String FriendlyBillableTimeToday;
-            TimeSinceTaskStart = System.DateTime.Now.Subtract(CurrentTaskStartTime);
+            TimeSinceTaskStart = System.DateTime.Now.Subtract(_taskInProgressStartTime);
             TotalTimeToday = TimeSinceTaskStart + new TimeSpan((int)Math.Floor(previousHours), (int)Math.Floor((previousHours * 60) % 60), (int)Math.Floor((previousHours * 60 * 60) % 60));
             TotalBillableTimeToday = TimeSinceTaskStart + new TimeSpan((int)Math.Floor(previousBillableHours), (int)Math.Floor((previousBillableHours * 60) % 60), (int)Math.Floor((previousBillableHours * 60 * 60) % 60));
             FriendlyTimeSinceTaskStart = String.Format("{0:00}", TimeSinceTaskStart.Hours) + ":" + String.Format("{0:00}", TimeSinceTaskStart.Minutes) + ":" + String.Format("{0:00}", TimeSinceTaskStart.Seconds);
@@ -418,21 +498,14 @@ namespace NanoTimeTracker
                 if (lastRow["EndDateTime"] == DBNull.Value)
                 {
                     //set running state in app
-                    CurrentTaskStartTime = (DateTime)lastRow["StartDateTime"];
+                    _taskInProgressStartTime = (DateTime)lastRow["StartDateTime"];
+                    _taskInProgress = true;
                     if (lastRow["TaskName"] != DBNull.Value)
                         WorkingOnTask = (string)lastRow["TaskName"];
                     WorkingBillable = (bool)lastRow["BillableFlag"];
 
-                    btn_Stop.Visible = true;
-                    btn_Stop.Focus();
-                    menuItem_StopCounting.Enabled = true;
-                    btn_Start.Visible = false;
-                    menuItem_StartCounting.Enabled = false;
-                    notifyIcon1.Icon = TaskInProgressIcon;
-                    this.Icon = TaskInProgressIcon;
-                    lbl_WorkingTimeValue.Text = "Recovering to Running...";
-
                     //display timer...
+                    lbl_WorkingTimeValue.Text = "Recovering to Running...";
                     timer_StatusUpdate.Start();
                 }
             }

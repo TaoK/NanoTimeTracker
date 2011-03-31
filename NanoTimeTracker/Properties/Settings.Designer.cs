@@ -46,5 +46,17 @@ namespace NanoTimeTracker.Properties {
                 this["LogTopics"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool HideCloseWarning {
+            get {
+                return ((bool)(this["HideCloseWarning"]));
+            }
+            set {
+                this["HideCloseWarning"] = value;
+            }
+        }
     }
 }

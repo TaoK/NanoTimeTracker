@@ -53,17 +53,18 @@ namespace NanoTimeTracker
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogWindow));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.btn_Start = new System.Windows.Forms.Button();
             this.btn_Stop = new System.Windows.Forms.Button();
             this.timer_StatusUpdate = new System.Windows.Forms.Timer(this.components);
             this.txt_LogBox = new System.Windows.Forms.TextBox();
             this.lbl_WorkingTimeValue = new System.Windows.Forms.Label();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-            this.contextMenu_SysTrayContext = new System.Windows.Forms.ContextMenu();
-            this.menuItem_StartCounting = new System.Windows.Forms.MenuItem();
-            this.menuItem_StopCounting = new System.Windows.Forms.MenuItem();
-            this.menuItem_Quit = new System.Windows.Forms.MenuItem();
+            this.contextMenuStrip_SysTrayContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.openLogWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.startTaskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stopEditTaskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.timer_NotifySingleClick = new System.Windows.Forms.Timer(this.components);
             this.dataGridView_TaskLogList = new System.Windows.Forms.DataGridView();
             this.StartDateTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -77,18 +78,19 @@ namespace NanoTimeTracker
             this.lbl_BillableTimeTodayValue = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.onlineHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lbl_WorkingTimeLabel = new System.Windows.Forms.Label();
             this.lbl_BillableTodayLabel = new System.Windows.Forms.Label();
             this.lbl_TimeTodayLabel = new System.Windows.Forms.Label();
             this.grp_Status = new System.Windows.Forms.GroupBox();
-            this.onlineHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStrip_SysTrayContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_TaskLogList)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1BindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).BeginInit();
@@ -98,7 +100,8 @@ namespace NanoTimeTracker
             // 
             // btn_Start
             // 
-            this.btn_Start.Location = new System.Drawing.Point(532, 375);
+            this.btn_Start.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_Start.Location = new System.Drawing.Point(536, 361);
             this.btn_Start.Name = "btn_Start";
             this.btn_Start.Size = new System.Drawing.Size(106, 37);
             this.btn_Start.TabIndex = 0;
@@ -107,7 +110,8 @@ namespace NanoTimeTracker
             // 
             // btn_Stop
             // 
-            this.btn_Stop.Location = new System.Drawing.Point(532, 417);
+            this.btn_Stop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_Stop.Location = new System.Drawing.Point(536, 403);
             this.btn_Stop.Name = "btn_Stop";
             this.btn_Stop.Size = new System.Drawing.Size(106, 37);
             this.btn_Stop.TabIndex = 1;
@@ -129,7 +133,7 @@ namespace NanoTimeTracker
             this.txt_LogBox.Name = "txt_LogBox";
             this.txt_LogBox.ReadOnly = true;
             this.txt_LogBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txt_LogBox.Size = new System.Drawing.Size(314, 82);
+            this.txt_LogBox.Size = new System.Drawing.Size(318, 82);
             this.txt_LogBox.TabIndex = 2;
             // 
             // lbl_WorkingTimeValue
@@ -137,44 +141,57 @@ namespace NanoTimeTracker
             this.lbl_WorkingTimeValue.AutoSize = true;
             this.lbl_WorkingTimeValue.Location = new System.Drawing.Point(112, 23);
             this.lbl_WorkingTimeValue.Name = "lbl_WorkingTimeValue";
-            this.lbl_WorkingTimeValue.Size = new System.Drawing.Size(53, 13);
+            this.lbl_WorkingTimeValue.Size = new System.Drawing.Size(49, 13);
             this.lbl_WorkingTimeValue.TabIndex = 3;
-            this.lbl_WorkingTimeValue.Text = "working...";
+            this.lbl_WorkingTimeValue.Text = "00:00:00";
             // 
             // notifyIcon1
             // 
-            this.notifyIcon1.ContextMenu = this.contextMenu_SysTrayContext;
+            this.notifyIcon1.ContextMenuStrip = this.contextMenuStrip_SysTrayContext;
             this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
             this.notifyIcon1.Text = "Time Logger";
             this.notifyIcon1.Visible = true;
             this.notifyIcon1.DoubleClick += new System.EventHandler(this.notifyIcon1_DoubleClick);
             this.notifyIcon1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDown);
             // 
-            // contextMenu_SysTrayContext
+            // contextMenuStrip_SysTrayContext
             // 
-            this.contextMenu_SysTrayContext.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuItem_StartCounting,
-            this.menuItem_StopCounting,
-            this.menuItem_Quit});
+            this.contextMenuStrip_SysTrayContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openLogWindowToolStripMenuItem,
+            this.startTaskToolStripMenuItem,
+            this.stopEditTaskToolStripMenuItem,
+            this.exitToolStripMenuItem1});
+            this.contextMenuStrip_SysTrayContext.Name = "contextMenuStrip_SysTrayContext";
+            this.contextMenuStrip_SysTrayContext.Size = new System.Drawing.Size(183, 114);
             // 
-            // menuItem_StartCounting
+            // openLogWindowToolStripMenuItem
             // 
-            this.menuItem_StartCounting.Index = 0;
-            this.menuItem_StartCounting.Text = "Start Counting";
-            this.menuItem_StartCounting.Click += new System.EventHandler(this.btn_Start_Click);
+            this.openLogWindowToolStripMenuItem.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.openLogWindowToolStripMenuItem.Name = "openLogWindowToolStripMenuItem";
+            this.openLogWindowToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.openLogWindowToolStripMenuItem.Text = "Open Log Window...";
+            this.openLogWindowToolStripMenuItem.Click += new System.EventHandler(this.openLogWindowToolStripMenuItem_Click);
             // 
-            // menuItem_StopCounting
+            // startTaskToolStripMenuItem
             // 
-            this.menuItem_StopCounting.Enabled = false;
-            this.menuItem_StopCounting.Index = 1;
-            this.menuItem_StopCounting.Text = "Stop Counting";
-            this.menuItem_StopCounting.Click += new System.EventHandler(this.btn_Stop_Click);
+            this.startTaskToolStripMenuItem.Name = "startTaskToolStripMenuItem";
+            this.startTaskToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.startTaskToolStripMenuItem.Text = "Start Task...";
+            this.startTaskToolStripMenuItem.Click += new System.EventHandler(this.startTaskToolStripMenuItem_Click);
             // 
-            // menuItem_Quit
+            // stopEditTaskToolStripMenuItem
             // 
-            this.menuItem_Quit.Index = 2;
-            this.menuItem_Quit.Text = "Quit";
-            this.menuItem_Quit.Click += new System.EventHandler(this.menuItem_Quit_Click);
+            this.stopEditTaskToolStripMenuItem.Name = "stopEditTaskToolStripMenuItem";
+            this.stopEditTaskToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.stopEditTaskToolStripMenuItem.Text = "Stop/Edit Task...";
+            this.stopEditTaskToolStripMenuItem.Click += new System.EventHandler(this.stopEditTaskToolStripMenuItem_Click);
+            // 
+            // exitToolStripMenuItem1
+            // 
+            this.exitToolStripMenuItem1.Name = "exitToolStripMenuItem1";
+            this.exitToolStripMenuItem1.Size = new System.Drawing.Size(182, 22);
+            this.exitToolStripMenuItem1.Text = "Exit";
+            this.exitToolStripMenuItem1.Click += new System.EventHandler(this.exitToolStripMenuItem1_Click);
             // 
             // timer_NotifySingleClick
             // 
@@ -199,7 +216,7 @@ namespace NanoTimeTracker
             this.dataGridView_TaskLogList.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnF2;
             this.dataGridView_TaskLogList.Location = new System.Drawing.Point(8, 27);
             this.dataGridView_TaskLogList.Name = "dataGridView_TaskLogList";
-            this.dataGridView_TaskLogList.Size = new System.Drawing.Size(638, 331);
+            this.dataGridView_TaskLogList.Size = new System.Drawing.Size(642, 317);
             this.dataGridView_TaskLogList.TabIndex = 6;
             this.dataGridView_TaskLogList.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_TaskLogList_CellValueChanged);
             // 
@@ -234,9 +251,9 @@ namespace NanoTimeTracker
             // TimeTaken
             // 
             this.TimeTaken.DataPropertyName = "TimeTaken";
-            dataGridViewCellStyle4.Format = "N2";
-            dataGridViewCellStyle4.NullValue = null;
-            this.TimeTaken.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.Format = "N2";
+            dataGridViewCellStyle1.NullValue = null;
+            this.TimeTaken.DefaultCellStyle = dataGridViewCellStyle1;
             this.TimeTaken.HeaderText = "TimeTaken";
             this.TimeTaken.Name = "TimeTaken";
             this.TimeTaken.Width = 80;
@@ -256,18 +273,18 @@ namespace NanoTimeTracker
             this.lbl_TimeTodayValue.AutoSize = true;
             this.lbl_TimeTodayValue.Location = new System.Drawing.Point(112, 46);
             this.lbl_TimeTodayValue.Name = "lbl_TimeTodayValue";
-            this.lbl_TimeTodayValue.Size = new System.Drawing.Size(53, 13);
+            this.lbl_TimeTodayValue.Size = new System.Drawing.Size(49, 13);
             this.lbl_TimeTodayValue.TabIndex = 7;
-            this.lbl_TimeTodayValue.Text = "working...";
+            this.lbl_TimeTodayValue.Text = "00:00:00";
             // 
             // lbl_BillableTimeTodayValue
             // 
             this.lbl_BillableTimeTodayValue.AutoSize = true;
             this.lbl_BillableTimeTodayValue.Location = new System.Drawing.Point(112, 69);
             this.lbl_BillableTimeTodayValue.Name = "lbl_BillableTimeTodayValue";
-            this.lbl_BillableTimeTodayValue.Size = new System.Drawing.Size(53, 13);
+            this.lbl_BillableTimeTodayValue.Size = new System.Drawing.Size(49, 13);
             this.lbl_BillableTimeTodayValue.TabIndex = 8;
-            this.lbl_BillableTimeTodayValue.Text = "working...";
+            this.lbl_BillableTimeTodayValue.Text = "00:00:00";
             // 
             // menuStrip1
             // 
@@ -277,45 +294,39 @@ namespace NanoTimeTracker
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(654, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(658, 24);
             this.menuStrip1.TabIndex = 9;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.optionsToolStripMenuItem,
-            this.exitToolStripMenuItem,
-            this.closeToolStripMenuItem});
+            this.closeToolStripMenuItem,
+            this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
-            // optionsToolStripMenuItem
+            // closeToolStripMenuItem
             // 
-            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.optionsToolStripMenuItem.Text = "Options...";
-            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
+            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+            this.closeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.closeToolStripMenuItem.Text = "Close";
+            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
-            // closeToolStripMenuItem
-            // 
-            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.closeToolStripMenuItem.Text = "Close";
-            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.deleteLogToolStripMenuItem});
+            this.deleteLogToolStripMenuItem,
+            this.optionsToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -323,9 +334,15 @@ namespace NanoTimeTracker
             // deleteLogToolStripMenuItem
             // 
             this.deleteLogToolStripMenuItem.Name = "deleteLogToolStripMenuItem";
-            this.deleteLogToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deleteLogToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
             this.deleteLogToolStripMenuItem.Text = "Delete Log...";
             this.deleteLogToolStripMenuItem.Click += new System.EventHandler(this.deleteLogToolStripMenuItem_Click);
+            // 
+            // optionsToolStripMenuItem
+            // 
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.optionsToolStripMenuItem.Text = "Options...";
             // 
             // helpToolStripMenuItem
             // 
@@ -335,6 +352,20 @@ namespace NanoTimeTracker
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
             this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // onlineHelpToolStripMenuItem
+            // 
+            this.onlineHelpToolStripMenuItem.Name = "onlineHelpToolStripMenuItem";
+            this.onlineHelpToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.onlineHelpToolStripMenuItem.Text = "Online Help";
+            this.onlineHelpToolStripMenuItem.Click += new System.EventHandler(this.onlineHelpToolStripMenuItem_Click);
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.aboutToolStripMenuItem.Text = "About...";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // lbl_WorkingTimeLabel
             // 
@@ -365,6 +396,8 @@ namespace NanoTimeTracker
             // 
             // grp_Status
             // 
+            this.grp_Status.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.grp_Status.Controls.Add(this.lbl_BillableTodayLabel);
             this.grp_Status.Controls.Add(this.lbl_WorkingTimeLabel);
             this.grp_Status.Controls.Add(this.lbl_BillableTimeTodayValue);
@@ -372,30 +405,17 @@ namespace NanoTimeTracker
             this.grp_Status.Controls.Add(this.txt_LogBox);
             this.grp_Status.Controls.Add(this.lbl_TimeTodayLabel);
             this.grp_Status.Controls.Add(this.lbl_TimeTodayValue);
-            this.grp_Status.Location = new System.Drawing.Point(8, 364);
+            this.grp_Status.Location = new System.Drawing.Point(8, 350);
             this.grp_Status.Name = "grp_Status";
-            this.grp_Status.Size = new System.Drawing.Size(518, 100);
+            this.grp_Status.Size = new System.Drawing.Size(522, 100);
             this.grp_Status.TabIndex = 12;
             this.grp_Status.TabStop = false;
             this.grp_Status.Text = "Status";
             // 
-            // onlineHelpToolStripMenuItem
-            // 
-            this.onlineHelpToolStripMenuItem.Name = "onlineHelpToolStripMenuItem";
-            this.onlineHelpToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.onlineHelpToolStripMenuItem.Text = "Online Help";
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.aboutToolStripMenuItem.Text = "About...";
-            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
-            // 
             // LogWindow
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-            this.ClientSize = new System.Drawing.Size(654, 476);
+            this.ClientSize = new System.Drawing.Size(658, 462);
             this.Controls.Add(this.grp_Status);
             this.Controls.Add(this.dataGridView_TaskLogList);
             this.Controls.Add(this.btn_Stop);
@@ -403,11 +423,13 @@ namespace NanoTimeTracker
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
+            this.MinimumSize = new System.Drawing.Size(436, 306);
             this.Name = "LogWindow";
             this.Text = "LogWindow";
             this.Load += new System.EventHandler(this.LogWindow_Load);
             this.Closing += new System.ComponentModel.CancelEventHandler(this.LogWindow_Closing);
             this.Resize += new System.EventHandler(this.LogWindow_Resize);
+            this.contextMenuStrip_SysTrayContext.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_TaskLogList)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1BindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).EndInit();
@@ -428,10 +450,6 @@ namespace NanoTimeTracker
         private Label lbl_TimeTodayValue;
         private Label lbl_BillableTimeTodayValue;
         private NotifyIcon notifyIcon1;
-        private ContextMenu contextMenu_SysTrayContext;
-        private MenuItem menuItem_StartCounting;
-        private MenuItem menuItem_StopCounting;
-        private MenuItem menuItem_Quit;
         private Timer timer_StatusUpdate;
         private Timer timer_NotifySingleClick;
         private DataGridView dataGridView_TaskLogList;
@@ -448,7 +466,6 @@ namespace NanoTimeTracker
         private Label lbl_BillableTodayLabel;
         private GroupBox grp_Status;
         private ToolStripMenuItem fileToolStripMenuItem;
-        private ToolStripMenuItem optionsToolStripMenuItem;
         private ToolStripMenuItem exitToolStripMenuItem;
         private ToolStripMenuItem closeToolStripMenuItem;
         private ToolStripMenuItem toolsToolStripMenuItem;
@@ -456,6 +473,13 @@ namespace NanoTimeTracker
         private ToolStripMenuItem helpToolStripMenuItem;
         private ToolStripMenuItem onlineHelpToolStripMenuItem;
         private ToolStripMenuItem aboutToolStripMenuItem;
+        private ToolStripMenuItem optionsToolStripMenuItem;
+        private ContextMenuStrip contextMenuStrip_SysTrayContext;
+        private ToolStripMenuItem openLogWindowToolStripMenuItem;
+        private ToolStripMenuItem startTaskToolStripMenuItem;
+        private ToolStripMenuItem stopEditTaskToolStripMenuItem;
+        private ToolStripMenuItem exitToolStripMenuItem1;
+
     }
 }
 
