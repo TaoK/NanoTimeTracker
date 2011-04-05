@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  */
 
-namespace NanoTimeTracker
+namespace NanoTimeTracker.Dialogs
 {
     partial class AboutBox
     {

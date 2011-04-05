@@ -12,6 +12,7 @@
     <AssemblyName>NanoTimeTracker</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -24,7 +25,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -48,6 +48,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
@@ -55,23 +56,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AboutBox.cs">
+    <Compile Include="ConfigurableFileSettingsProvider.cs" />
+    <Compile Include="Dialogs\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AboutBox.Designer.cs">
+    <Compile Include="Dialogs\AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="CloseConfirmationWindow.cs">
+    <Compile Include="Dialogs\DismissableConfirmationWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CloseConfirmationWindow.Designer.cs">
-      <DependentUpon>CloseConfirmationWindow.cs</DependentUpon>
+    <Compile Include="Dialogs\DismissableConfirmationWindow.Designer.cs">
+      <DependentUpon>DismissableConfirmationWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="DataSet1.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>DataSet1.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Settings.cs" />
     <Compile Include="WindowHacker.cs" />
     <Compile Include="Icons\IconTypePlaceholder.cs" />
     <Compile Include="LogWindow.cs">
@@ -87,7 +90,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="TaskInput.resx">
+    <EmbeddedResource Include="Dialogs\TaskInput.resx">
       <DependentUpon>TaskInput.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -117,21 +120,21 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="TaskInput.cs">
+    <Compile Include="Dialogs\TaskInput.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TaskInput.designer.cs">
+    <Compile Include="Dialogs\TaskInput.designer.cs">
       <DependentUpon>TaskInput.cs</DependentUpon>
     </Compile>
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="AboutBox.resx">
+    <EmbeddedResource Include="Dialogs\AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="CloseConfirmationWindow.resx">
-      <DependentUpon>CloseConfirmationWindow.cs</DependentUpon>
+    <EmbeddedResource Include="Dialogs\DismissableConfirmationWindow.resx">
+      <DependentUpon>DismissableConfirmationWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Icons\edit-clear-history-2-combined.ico" />

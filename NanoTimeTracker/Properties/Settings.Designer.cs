@@ -37,18 +37,6 @@ namespace NanoTimeTracker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool LogTopics {
-            get {
-                return ((bool)(this["LogTopics"]));
-            }
-            set {
-                this["LogTopics"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool HideCloseWarning {
             get {
@@ -56,6 +44,42 @@ namespace NanoTimeTracker.Properties {
             }
             set {
                 this["HideCloseWarning"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool upgraded {
+            get {
+                return ((bool)(this["upgraded"]));
+            }
+            set {
+                this["upgraded"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool HideExitWarning {
+            get {
+                return ((bool)(this["HideExitWarning"]));
+            }
+            set {
+                this["HideExitWarning"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool HideExitTaskInProgressWarning {
+            get {
+                return ((bool)(this["HideExitTaskInProgressWarning"]));
+            }
+            set {
+                this["HideExitTaskInProgressWarning"] = value;
             }
         }
     }

@@ -53,7 +53,7 @@ namespace NanoTimeTracker
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogWindow));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.btn_Start = new System.Windows.Forms.Button();
             this.btn_Stop = new System.Windows.Forms.Button();
             this.timer_StatusUpdate = new System.Windows.Forms.Timer(this.components);
@@ -251,9 +251,9 @@ namespace NanoTimeTracker
             // TimeTaken
             // 
             this.TimeTaken.DataPropertyName = "TimeTaken";
-            dataGridViewCellStyle1.Format = "N2";
-            dataGridViewCellStyle1.NullValue = null;
-            this.TimeTaken.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Format = "N2";
+            dataGridViewCellStyle2.NullValue = null;
+            this.TimeTaken.DefaultCellStyle = dataGridViewCellStyle2;
             this.TimeTaken.HeaderText = "TimeTaken";
             this.TimeTaken.Name = "TimeTaken";
             this.TimeTaken.Width = 80;
@@ -416,8 +416,8 @@ namespace NanoTimeTracker
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
             this.ClientSize = new System.Drawing.Size(658, 462);
-            this.Controls.Add(this.grp_Status);
             this.Controls.Add(this.dataGridView_TaskLogList);
+            this.Controls.Add(this.grp_Status);
             this.Controls.Add(this.btn_Stop);
             this.Controls.Add(this.btn_Start);
             this.Controls.Add(this.menuStrip1);
@@ -425,10 +425,9 @@ namespace NanoTimeTracker
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(436, 306);
             this.Name = "LogWindow";
-            this.Text = "LogWindow";
+            this.Text = "Nano TimeTracker - Log Window";
             this.Load += new System.EventHandler(this.LogWindow_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LogWindow_FormClosing);
-            this.Resize += new System.EventHandler(this.LogWindow_Resize);
             this.contextMenuStrip_SysTrayContext.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_TaskLogList)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1BindingSource)).EndInit();

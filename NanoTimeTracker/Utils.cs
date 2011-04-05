@@ -25,13 +25,16 @@ namespace NanoTimeTracker
 {
     static class Utils
     {
-        public static string ExpandPath(string path, DateTime fileDate, bool isXml)
+        public static string ExpandPath(string path, DateTime fileDate)
         {
             return path
-                .Replace("<DATE>", String.Format("{0:yyyy-MM-dd}", fileDate))
+                .Replace("<DATE>", "<YEAR>-<MONTH>-<DAY>")
+                .Replace("<YEAR>", fileDate.ToString("yyyy"))
+                .Replace("<MONTH>", fileDate.ToString("MM"))
+                .Replace("<WEEK>", fileDate.ToString("ww"))
+                .Replace("<DAY>", fileDate.ToString("dd"))
                 .Replace("<MYDOCUMENTS>", Environment.GetFolderPath(Environment.SpecialFolder.Personal).ToString()
-                )
-                + (isXml ? ".xml" : "");
+                );
         }
     }
 }

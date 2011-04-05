@@ -1,5 +1,20 @@
 Nano TimeTracker change log
 
+Version 0.9.2 - 2011-04-05
+-----------
+ - Fixed Quit vs Exit messaging
+ - Fixed Close vs Quit functionality to match newer windows apps like Messenger (incl. Alt-F4 hijacking)
+ - Cleaned up Notification Icon to use WinForms 2.0 events, added Show Main Window option.
+ - Resolved Focus issues on Task popup, esp. when called from system tray
+ - Added ability to update in-progress task without closing/completing it
+ - Added permanently dismissable warnings on close and exit
+ - Fixed tabbing orders
+ - Added logfile naming placeholders
+ - Implemented Upgrade of settings from version to version
+ - Implemented new Settings Provider, so you can save settings and data with the executable OR in a user data folder.
+
+
+
 Version 0.9.1
 -----------
  - Cleaned up UI to use menus

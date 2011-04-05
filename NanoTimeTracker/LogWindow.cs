@@ -34,26 +34,26 @@ namespace NanoTimeTracker
             InitializeComponent();
             dataGridView_TaskLogList.Columns["StartDateTime"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
             dataGridView_TaskLogList.Columns["EndDateTime"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
-            TaskDialog = new TaskInput();
+            TaskDialog = new Dialogs.TaskInput();
         }
 
-        private DateTime _taskInProgressStartTime;
-        private string WorkingOnTask = "";
-        private bool WorkingBillable = true;
-
-        private string LogFilePath;
-        private bool LogTopics;
-        private bool logByDate;
+        //State
         private bool _displayingDialog;
         private bool _taskInProgress;
+        private DateTime _taskInProgressStartTime;
+        private string _taskInProgressDescription = "";
+        private string _taskInProgressCategory = "";
+        private bool _taskInProgressTimeBillable = true;
+        private double _previousHours;
+        private double _previousBillableHours;
 
-        private DateTime CurrentFileDate;
-        private double previousHours;
-        private double previousBillableHours;
+        //TEMP
+        bool _exiting = false;
 
+        //Resources
         private Icon TaskInProgressIcon;
         private Icon NoTaskActiveIcon;
-        private TaskInput TaskDialog;
+        private Dialogs.TaskInput TaskDialog;
 
         #region Event Handlers
 
@@ -62,13 +62,14 @@ namespace NanoTimeTracker
             TaskInProgressIcon = new Icon(typeof(Icons.IconTypePlaceholder), "view-calendar-tasks-combined.ico");
             NoTaskActiveIcon = new Icon(typeof(Icons.IconTypePlaceholder), "edit-clear-history-2-combined.ico");
 
-            LogFilePath = Properties.Settings.Default.LogFilePath;
-            if (LogFilePath.IndexOf("<DATE>") > 0)
-                logByDate = true;
-            else
-                logByDate = false;
-            if (Properties.Settings.Default.LogTopics)
-                LogTopics = true;
+            if (!Properties.Settings.Default.upgraded)
+            {
+                Properties.Settings.Default.Upgrade();
+                Properties.Settings.Default.upgraded = true;
+                Properties.Settings.Default.Save();
+                //TODO: Add data migration too.
+                //TODO: ADD Confirmation window asking about deleting previous settings, if there was really an upgrade
+            }
 
             InitializeData();
             UpdateControlDisplayConsistency();
@@ -76,11 +77,35 @@ namespace NanoTimeTracker
 
         private void LogWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (e.CloseReason == CloseReason.UserClosing)
+            if (e.CloseReason == CloseReason.UserClosing && !_exiting)
             {
+                //behave like Windows Messenger and other systray-based programs, hijack exit for close and explain
                 e.Cancel = true;
-                LogWindowClose();
+                LogWindowCloseWithWarning();
             }
+            else
+            {
+                if (DismissableWarning("Exiting Application", "You are exiting the Nano TimeTracker application - to later track time later you will need to start it again. If you just want to hide the window, then cancel here and choose \"Close\" instead.", "HideExitWarning"))
+                {
+                    if (_taskInProgress)
+                    {
+                        if (!DismissableWarning("Exiting - Task In Progress", "You are exiting Nano TimeTracker, but you still have a task in progress. The next time you start the application, you will be asked to confirm when that task completed.", "HideExitTaskInProgressWarning"))
+                        {
+                            //user cancelled on the exit task in progress warning
+                            e.Cancel = true;
+                        }
+                    }
+                }
+                else
+                {
+                    //user cancelled on the exit warning
+                    e.Cancel = true;
+                }
+            }
+
+            //assuming we didn't actually exit, reset exiting flag for next time
+            if (e.Cancel)
+                _exiting = false;
         }
 
         private void LogWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -89,29 +114,24 @@ namespace NanoTimeTracker
             // -> Might need to handle exit differently? All state outside the window?
             if (timer_StatusUpdate.Enabled == true)
             {
-                PromptTaskEnd();
+                PromptTask();
                 //TODO: handle cancellation to avoid exit?
             }
         }
 
         private void btn_Stop_Click(object sender, System.EventArgs e)
         {
-            PromptTaskEnd();
+            PromptTask();
         }
 
         private void btn_Start_Click(object sender, System.EventArgs e)
         {
-            PromptTaskStart();
+            PromptTask();
         }
 
         private void timer_StatusUpdate_Tick(object sender, System.EventArgs e)
         {
             UpdateStatusDisplay();
-        }
-
-        private void LogWindow_Resize(object sender, System.EventArgs e)
-        {
-            UpdateControlDisplayConsistency();
         }
 
         private void notifyIcon1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -128,24 +148,18 @@ namespace NanoTimeTracker
         private void timer_NotifySingleClick_Tick(object sender, System.EventArgs e)
         {
             timer_NotifySingleClick.Stop();
-            if (timer_StatusUpdate.Enabled == false)
-            {
-                PromptTaskStart();
-            }
-            else
-            {
-                PromptTaskEnd();
-            }
+            PromptTask();
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            LogWindowClose();
+            LogWindowCloseWithWarning();
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            _exiting = true;
+            this.Close();
         }
 
         private void deleteLogToolStripMenuItem_Click(object sender, EventArgs e)
@@ -160,13 +174,11 @@ namespace NanoTimeTracker
 
                 if (result == DialogResult.Yes)
                 {
-                    if (timer_StatusUpdate.Enabled == true)
+                    if (_taskInProgress)
                     {
-                        PromptTaskEnd();
-
+                        PromptTask();
                         //TODO: handle cancellation
                     }
-
                     DeleteLogs();
                 }
 
@@ -178,9 +190,8 @@ namespace NanoTimeTracker
             //TODO: IMPLEMENT OPTIONS FORM 
 
             string messageText;
-            messageText = "Current LogFile Path: \u000D\u000A" + LogFilePath;
-            messageText = messageText + "\u000D\u000A\u000D\u000A" + "Topic Logging: " + LogTopics.ToString();
-            messageText = messageText + "\u000D\u000A\u000D\u000A" + "To change these options, please use regedit.";
+            messageText = "Current LogFile Path: \u000D\u000A" + Properties.Settings.Default.LogFilePath;
+            messageText = messageText + "\u000D\u000A\u000D\u000A" + "To change these options, please use regedit (or something like that).";
 
             MessageBox.Show(messageText, "LogFile Path", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -201,7 +212,7 @@ namespace NanoTimeTracker
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            AboutBox box = new AboutBox();
+            Dialogs.AboutBox box = new Dialogs.AboutBox();
             box.ShowDialog();
             box.Dispose();
         }
@@ -218,17 +229,18 @@ namespace NanoTimeTracker
 
         private void startTaskToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            PromptTaskStart();
+            PromptTask();
         }
 
         private void stopEditTaskToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            PromptTaskEnd();
+            PromptTask();
         }
 
         private void exitToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            _exiting = true;
+            this.Close();
         }
 
         #endregion
@@ -236,20 +248,37 @@ namespace NanoTimeTracker
 
         #region Local Methods
 
-        private void LogWindowClose()
+        private void LogWindowCloseWithWarning()
         {
-            if (!Properties.Settings.Default.HideCloseWarning)
+            if (DismissableWarning("Closing Window", "The Nano TimeTracker log window is closing, but the program will continue to run - you can start and stop tasks, or open the main window, by clicking on the icon in the tray on the bottom right.", "HideCloseWarning"))
+                this.Hide();
+        }
+
+        private bool DismissableWarning(string warningTitle, string warningMessage, string settingKey)
+        {
+            bool hideMessage = (bool)Properties.Settings.Default.PropertyValues[settingKey].PropertyValue;
+            if (!hideMessage)
             {
-                CloseConfirmationWindow closeDialog = new CloseConfirmationWindow();
-                closeDialog.ShowDialog();
-                if (closeDialog.DontShowAgain)
+                bool permanentlyDismissed;
+                if (Dialogs.DismissableConfirmationWindow.ShowMessage(warningTitle, warningMessage, out permanentlyDismissed) == DialogResult.OK)
                 {
-                    Properties.Settings.Default.HideCloseWarning = true;
-                    Properties.Settings.Default.Save();
+                    if (permanentlyDismissed)
+                    {
+                        Properties.Settings.Default.PropertyValues[settingKey].PropertyValue = true;
+                        Properties.Settings.Default.Save();
+                    }
+                    return true;
                 }
-                closeDialog.Dispose();
+                else
+                {
+                    return false;
+                }
             }
-            this.Hide();
+            else
+            {
+                //if the user has decided to hide the message, we assume consent.
+                return true;
+            }
         }
 
         private void UpdateControlDisplayConsistency()
@@ -329,7 +358,7 @@ namespace NanoTimeTracker
             }
         }
 
-        private void PromptTaskStart()
+        private void PromptTask()
         {
             //double-check whether we really should be displaying
             if (!_displayingDialog)
@@ -338,57 +367,78 @@ namespace NanoTimeTracker
                 UpdateControlDisplayConsistency();
 
                 bool doAction;
-                if (LogTopics)
-                {
-                    //only relevant if we're not minimized, but seems to do no harm.
-                    this.Activate();
+                //only relevant if we're not minimized, but seems to do no harm.
+                this.Activate();
 
-                    TaskDialog.SetPrompt(DateTime.Now, null, WorkingOnTask, null);
-                    if (TaskDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    {
-                        WorkingOnTask = TaskDialog.TaskDescription;
-                        doAction = true;
-                    }
-                    else
-                        doAction = false;
+                DateTime promptStartDate;
+                DateTime? promptEndDate;
+                if (!_taskInProgress)
+                {
+                    promptStartDate = DateTime.Now;
+                    promptEndDate = null;
                 }
                 else
-                    doAction = true;
+                {
+                    promptStartDate = _taskInProgressStartTime;
+                    promptEndDate = DateTime.Now;
+                }
 
-                //in the absence of an appropriate UI
-                WorkingBillable = true;
+                DateTime? taskInProgressEndDate = null;
+                TaskDialog.SetPrompt(promptStartDate, promptEndDate, _taskInProgressDescription, _taskInProgressCategory, _taskInProgressTimeBillable);
+                if (TaskDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    _taskInProgressDescription = TaskDialog.TaskDescription;
+                    _taskInProgressCategory = TaskDialog.TaskCategory;
+                    _taskInProgressTimeBillable = TaskDialog.TaskBillable;
+                    _taskInProgressStartTime = TaskDialog.TaskStartDate.Value; //TODO: add validation to ensure this never fails
+                    taskInProgressEndDate = TaskDialog.TaskEndDate;
+                    doAction = true;
+                }
+                else
+                    doAction = false;
 
                 if (doAction)
                 {
                     //save and switch day if appropriate
-                    SaveTimeTrackingDB(true);
+                    if (!_taskInProgress)
+                        SaveTimeTrackingDB(true);
 
                     //retrieve existing for total display
                     CheckHourTotals();
 
-                    //set started state
-                    _taskInProgress = true;
-                    _taskInProgressStartTime = System.DateTime.Now;
+                    //update log if already running but we're not completing
+                    if (_taskInProgress && taskInProgressEndDate == null)
+                        UpdateLogExistingTask(_taskInProgressStartTime, taskInProgressEndDate, _taskInProgressDescription, _taskInProgressCategory, _taskInProgressTimeBillable);
 
-                    //Log task
-                    LogText(Utils.ExpandPath(LogFilePath, DateTime.Now, false), String.Format("{0:yyyy-MM-dd HH:mm:ss}", _taskInProgressStartTime) + "\t");
+                    //start log if not already in-progress
+                    if (!_taskInProgress)
+                    {
+                        _taskInProgress = true;
+                        StartLoggingTask(_taskInProgressStartTime, _taskInProgressDescription, _taskInProgressCategory, _taskInProgressTimeBillable);
+                    }
 
-                    //start tracking new task in DB
-                    DataRow newRow = dataSet1.DataTable1.NewRow();
-                    newRow["StartDateTime"] = _taskInProgressStartTime;
-                    if (WorkingOnTask != "") newRow["TaskName"] = WorkingOnTask;
-                    newRow["BillableFlag"] = WorkingBillable;
-                    dataSet1.DataTable1.Rows.Add(newRow);
-                    SaveTimeTrackingDB();
+                    //end log if end date provided
+                    if (taskInProgressEndDate != null)
+                    {
+                        _taskInProgress = false;
+                        EndLoggingTask(_taskInProgressStartTime, taskInProgressEndDate.Value, _taskInProgressDescription, _taskInProgressCategory, _taskInProgressTimeBillable);
+                    }
 
-                    //LogBox
-                    txt_LogBox.Text = txt_LogBox.Text + "Starting... " + _taskInProgressStartTime.ToString() + ";";
-                    if (WorkingOnTask != "") txt_LogBox.Text = txt_LogBox.Text + " " + WorkingOnTask;
-                    txt_LogBox.Text = txt_LogBox.Text + " \u000D\u000A";
 
-                    //display timer...
-                    lbl_WorkingTimeValue.Text = "Starting...";
-                    timer_StatusUpdate.Start();
+                    //UI updates specific to task running change
+                    UpdateControlDisplayConsistency();
+                    if (_taskInProgress)
+                    {
+                        lbl_WorkingTimeValue.Text = "Starting...";
+                        timer_StatusUpdate.Start();
+                        btn_Stop.Focus();
+                    }
+                    else
+                    {
+                        timer_StatusUpdate.Stop();
+                        lbl_WorkingTimeValue.Text = "00:00:00";
+                        btn_Start.Focus();
+                    }
                 }
 
                 //release dialog "lock" and update display
@@ -397,78 +447,6 @@ namespace NanoTimeTracker
             }
         }
 
-        private void PromptTaskEnd()
-        {
-            //double-check whether we really should be displaying
-            if (!_displayingDialog)
-            {
-                _displayingDialog = true;
-                UpdateControlDisplayConsistency();
-
-                bool doAction;
-                DateTime taskEndTime = DateTime.Now;
-
-                if (LogTopics)
-                {
-                    //only relevant if we're not minimized, but seems to do no harm.
-                    this.Activate();
-
-                    TaskDialog.SetPrompt(_taskInProgressStartTime, taskEndTime, WorkingOnTask, null);
-                    if (TaskDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    {
-                        WorkingOnTask = TaskDialog.TaskDescription;
-                        doAction = true;
-                    }
-                    else
-                        doAction = false;
-                }
-                else
-                    doAction = true;
-
-                if (doAction)
-                {
-                    //Log action...
-                    LogText(Utils.ExpandPath(LogFilePath, _taskInProgressStartTime, false), String.Format("{0:yyyy-MM-dd HH:mm:ss}", taskEndTime) + "\t" + String.Format("{0:0.00}", taskEndTime.Subtract(_taskInProgressStartTime).TotalHours) + "\t" + WorkingOnTask + "\u000D\u000A");
-
-                    DataRow[] rowToClose = dataSet1.DataTable1.Select("StartDateTime = #" + _taskInProgressStartTime.ToString() + "#");
-                    if (rowToClose.Length == 0)
-                        rowToClose = dataSet1.DataTable1.Select("StartDateTime Is Not Null And EndDateTime Is Null", "StartDateTime Desc");
-                    if (rowToClose.Length > 0)
-                    {
-                        DateTime realStartedTime = (DateTime)rowToClose[0]["StartDateTime"];
-                        if (rowToClose.Length > 1)
-                            MessageBox.Show("More than one unfinished task found. Using more recent one: " + String.Format("{0:yyyy-MM-dd HH:mm:ss}", taskEndTime), "Multiple log entries", MessageBoxButtons.OK);
-                        rowToClose[0]["EndDateTime"] = taskEndTime;
-                        rowToClose[0]["TaskName"] = WorkingOnTask;
-                        rowToClose[0]["BillableFlag"] = WorkingBillable;
-                        rowToClose[0]["TimeTaken"] = taskEndTime.Subtract(realStartedTime).TotalHours;
-
-                        //save and switch day if appropriate
-                        SaveTimeTrackingDB(true);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Could not find log entry to complete! Task Lost.", "Missing log entry", MessageBoxButtons.OK);
-                    }
-
-                    //Textbox display...
-                    txt_LogBox.Text = txt_LogBox.Text + "Stopping... " + System.DateTime.Now.ToString() + ";";
-                    if (WorkingOnTask != "") txt_LogBox.Text = txt_LogBox.Text + " " + WorkingOnTask;
-                    txt_LogBox.Text = txt_LogBox.Text + " \u000D\u000A";
-
-                    //display timer...
-                    timer_StatusUpdate.Stop();
-                    lbl_WorkingTimeValue.Text = "00:00:00";
-
-                    //status flag
-                    _taskInProgress = false;
-                }
-
-                //release dialog "lock" and update display
-                _displayingDialog = false;
-                UpdateControlDisplayConsistency();
-            }
-        }
 
         private void UpdateStatusDisplay()
         {
@@ -479,8 +457,8 @@ namespace NanoTimeTracker
             String FriendlyTimeToday;
             String FriendlyBillableTimeToday;
             TimeSinceTaskStart = System.DateTime.Now.Subtract(_taskInProgressStartTime);
-            TotalTimeToday = TimeSinceTaskStart + new TimeSpan((int)Math.Floor(previousHours), (int)Math.Floor((previousHours * 60) % 60), (int)Math.Floor((previousHours * 60 * 60) % 60));
-            TotalBillableTimeToday = TimeSinceTaskStart + new TimeSpan((int)Math.Floor(previousBillableHours), (int)Math.Floor((previousBillableHours * 60) % 60), (int)Math.Floor((previousBillableHours * 60 * 60) % 60));
+            TotalTimeToday = TimeSinceTaskStart + new TimeSpan((int)Math.Floor(_previousHours), (int)Math.Floor((_previousHours * 60) % 60), (int)Math.Floor((_previousHours * 60 * 60) % 60));
+            TotalBillableTimeToday = TimeSinceTaskStart + new TimeSpan((int)Math.Floor(_previousBillableHours), (int)Math.Floor((_previousBillableHours * 60) % 60), (int)Math.Floor((_previousBillableHours * 60 * 60) % 60));
             FriendlyTimeSinceTaskStart = String.Format("{0:00}", TimeSinceTaskStart.Hours) + ":" + String.Format("{0:00}", TimeSinceTaskStart.Minutes) + ":" + String.Format("{0:00}", TimeSinceTaskStart.Seconds);
             FriendlyTimeToday = String.Format("{0:00}", TotalTimeToday.Hours) + ":" + String.Format("{0:00}", TotalTimeToday.Minutes) + ":" + String.Format("{0:00}", TotalTimeToday.Seconds);
             FriendlyBillableTimeToday = String.Format("{0:00}", TotalBillableTimeToday.Hours) + ":" + String.Format("{0:00}", TotalBillableTimeToday.Minutes) + ":" + String.Format("{0:00}", TotalBillableTimeToday.Seconds);
@@ -493,17 +471,14 @@ namespace NanoTimeTracker
 
         #endregion
 
-
         #region Data-Management Methods - TODO: send to dedicated class.
 
         private void InitializeData()
         {
-            CurrentFileDate = DateTime.Now;
-
-            //Recover any existing info for today...
-            string effectivePath = Utils.ExpandPath(LogFilePath, DateTime.Now, true);
-            if (System.IO.File.Exists(effectivePath))
-                dataSet1.ReadXml(effectivePath);
+            //TODO: add fileDate Switch... or should it be filename switch simply?
+            _currentLogFileName = DeriveLogFileName();
+            if (System.IO.File.Exists(_currentLogFileName + ".xml"))
+                dataSet1.ReadXml(_currentLogFileName + ".xml");
 
             //Recover running state if required...
             DataRow[] recentrows = dataSet1.DataTable1.Select("StartDateTime Is Not Null", "StartDateTime Desc");
@@ -516,8 +491,8 @@ namespace NanoTimeTracker
                     _taskInProgressStartTime = (DateTime)lastRow["StartDateTime"];
                     _taskInProgress = true;
                     if (lastRow["TaskName"] != DBNull.Value)
-                        WorkingOnTask = (string)lastRow["TaskName"];
-                    WorkingBillable = (bool)lastRow["BillableFlag"];
+                        _taskInProgressDescription = (string)lastRow["TaskName"];
+                    _taskInProgressTimeBillable = (bool)lastRow["BillableFlag"];
 
                     //display timer...
                     lbl_WorkingTimeValue.Text = "Recovering to Running...";
@@ -526,6 +501,105 @@ namespace NanoTimeTracker
             }
 
             CheckHourTotals();
+        }
+
+        private void StartLoggingTask(DateTime taskStartTime, string taskDescription, string taskCategory, bool taskTimeBillable)
+        {
+            //CSV File
+            LogText(
+                _currentLogFileName,
+                String.Format("{0:yyyy-MM-dd HH:mm:ss}\t",
+                    taskStartTime
+                    )
+                );
+
+            //DB
+            DataRow newRow = dataSet1.DataTable1.NewRow();
+            newRow["StartDateTime"] = taskStartTime;
+            if (taskDescription != "") newRow["TaskName"] = taskDescription;
+            //TODO: add category column + saving
+            newRow["BillableFlag"] = taskTimeBillable;
+            dataSet1.DataTable1.Rows.Add(newRow);
+            SaveTimeTrackingDB();
+
+            //LogBox
+            txt_LogBox.Text = txt_LogBox.Text + "Starting... " + taskStartTime.ToString() + ";";
+            if (taskDescription != "") txt_LogBox.Text = txt_LogBox.Text + " " + taskDescription;
+            txt_LogBox.Text = txt_LogBox.Text + " \u000D\u000A";
+        }
+
+        private void EndLoggingTask(DateTime taskStartTime, DateTime taskEndDate, string taskDescription, string taskCategory, bool taskTimeBillable)
+        {
+            //CSV File
+            LogText(
+                _currentLogFileName,
+                String.Format("{0:yyyy-MM-dd HH:mm:ss}\t{1:0.00}\t{2}\u000D\u000A",
+                    taskEndDate,
+                    taskEndDate.Subtract(_taskInProgressStartTime).TotalHours,
+                    taskDescription
+                    )
+                );
+
+            //DB
+            UpdateLogExistingTask(taskStartTime, taskEndDate, taskDescription, taskCategory, taskTimeBillable);
+
+            //LogBox
+            txt_LogBox.Text = txt_LogBox.Text + "Stopping... " + System.DateTime.Now.ToString() + ";";
+            if (taskDescription != "") txt_LogBox.Text = txt_LogBox.Text + " " + taskDescription;
+            txt_LogBox.Text = txt_LogBox.Text + " \u000D\u000A";
+        }
+
+        private void UpdateLogExistingTask(DateTime taskStartTime, DateTime? taskEndDate, string taskDescription, string taskCategory, bool taskTimeBillable)
+        {
+            DataRow rowToClose = FindExistingInProgressTask(taskStartTime);
+            if (rowToClose != null)
+            {
+                rowToClose["StartDateTime"] = taskStartTime;
+                rowToClose["TaskName"] = taskDescription;
+                //TODO: add category column + saving
+                rowToClose["BillableFlag"] = taskTimeBillable;
+                if (taskEndDate != null)
+                {
+                    rowToClose["EndDateTime"] = taskEndDate.Value;
+                    rowToClose["TimeTaken"] = taskEndDate.Value.Subtract(taskStartTime).TotalHours;
+                    //save and switch day if appropriate
+                    SaveTimeTrackingDB(true);
+                }
+                else
+                {
+                    rowToClose["EndDateTime"] = DBNull.Value;
+                    rowToClose["TimeTaken"] = DBNull.Value;
+                    //save WITHOUT switching day
+                    SaveTimeTrackingDB();
+                }
+
+            }
+            else
+            {
+                MessageBox.Show("Could not find open log entry to update! Task Lost.", "Missing log entry", MessageBoxButtons.OK);
+            }
+        }
+
+        private DataRow FindExistingInProgressTask(DateTime taskStartTime)
+        {
+            DataRow targetRow = null;
+            DataRow[] candidateRows = dataSet1.DataTable1.Select("StartDateTime = #" + taskStartTime.ToString() + "# And EndDateTime Is Null");
+            if (candidateRows.Length == 0)
+                candidateRows = dataSet1.DataTable1.Select("StartDateTime Is Not Null And EndDateTime Is Null", "StartDateTime Desc");
+            if (candidateRows.Length > 0)
+            {
+                DateTime matchStartTime = (DateTime)candidateRows[0]["StartDateTime"];
+                if (candidateRows.Length > 1)
+                    MessageBox.Show(string.Format("More than one unfinished task found. Using more recent one, with original start date {0:yyyy-MM-dd HH:mm:ss}.", matchStartTime), "Multiple log entries", MessageBoxButtons.OK);
+                targetRow = candidateRows[0];
+            }
+            return targetRow;
+        }
+
+        private string _currentLogFileName;
+        private string DeriveLogFileName()
+        {
+            return Utils.ExpandPath(Properties.Settings.Default.LogFilePath, DateTime.Now);
         }
 
         private void LogText(String Path, String Text)
@@ -578,22 +652,18 @@ namespace NanoTimeTracker
 
         private void SaveTimeTrackingDB(bool AllowDateSwitch)
         {
-            DateTime CurrentDate = DateTime.Now;
-
-            //If we have a valid date and path set, log. Otherwise we must be starting up...
-            if (CurrentFileDate != null && LogFilePath != null)
+            //If we have a valid date set, log. Otherwise we must be starting up...
+            if (!string.IsNullOrEmpty(_currentLogFileName))
             {
                 //Write the dataset
-                string effectivePath = Utils.ExpandPath(LogFilePath, CurrentFileDate, true);
-                dataSet1.WriteXml(effectivePath);
+                dataSet1.WriteXml(_currentLogFileName + ".xml");
 
                 //if the day has ended, clear/start anew
-                if (CurrentFileDate.Date != CurrentDate.Date && AllowDateSwitch)
+                if (!_currentLogFileName.Equals(DeriveLogFileName()) && AllowDateSwitch)
                 {
                     dataSet1.DataTable1.Rows.Clear();
-                    CurrentFileDate = CurrentDate;
-                    effectivePath = Utils.ExpandPath(LogFilePath, CurrentFileDate, true);
-                    dataSet1.WriteXml(effectivePath);
+                    _currentLogFileName = DeriveLogFileName();
+                    dataSet1.WriteXml(_currentLogFileName + ".xml");
                 }
             }
         }
@@ -603,24 +673,23 @@ namespace NanoTimeTracker
             //retrieve existing for total display
             object previousHoursResult = dataSet1.DataTable1.Compute("Sum(TimeTaken)", null);
             if (previousHoursResult != DBNull.Value)
-                previousHours = (double)previousHoursResult;
+                _previousHours = (double)previousHoursResult;
             else
-                previousHours = 0;
+                _previousHours = 0;
 
             object previousHoursBillableResult = dataSet1.DataTable1.Compute("Sum(TimeTaken)", "BillableFlag = True");
             if (previousHoursBillableResult != DBNull.Value)
-                previousBillableHours = (double)previousHoursBillableResult;
+                _previousBillableHours = (double)previousHoursBillableResult;
             else
-                previousBillableHours = 0;
+                _previousBillableHours = 0;
         }
 
         private void DeleteLogs()
         {
             //Delete the file
-            string effectivePath = Utils.ExpandPath(LogFilePath, DateTime.Now, false);
-            if (System.IO.File.Exists(effectivePath))
+            if (System.IO.File.Exists(_currentLogFileName))
             {
-                System.IO.File.Delete(effectivePath);
+                System.IO.File.Delete(_currentLogFileName);
             }
             else
             {
@@ -631,7 +700,7 @@ namespace NanoTimeTracker
             if (dataSet1.DataTable1.Rows.Count > 0)
             {
                 dataSet1.DataTable1.Rows.Clear();
-                SaveTimeTrackingDB();
+                SaveTimeTrackingDB(true);
             }
             else
             {

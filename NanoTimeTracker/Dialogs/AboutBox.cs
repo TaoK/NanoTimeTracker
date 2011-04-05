@@ -25,7 +25,7 @@ using System.Reflection;
 using System.IO;
 using System.Windows.Forms;
 
-namespace NanoTimeTracker
+namespace NanoTimeTracker.Dialogs
 {
     partial class AboutBox : Form
     {
@@ -37,6 +37,7 @@ namespace NanoTimeTracker
             this.labelCopyright.Text = AssemblyCopyright;
             this.textBoxDescription.Text = AssemblyDescription;
 
+            //TODO: Add third-party library / code used and licenses somewhere in here (ManagedWinAPI and Icons?)
             string GPLText = "";
             try  
             {  

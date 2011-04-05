@@ -5,10 +5,16 @@
     <Setting Name="LogFilePath" Type="System.String" Scope="User">
       <Value Profile="(Default)">&lt;MYDOCUMENTS&gt;\&lt;DATE&gt;TimeTrackerLog.txt</Value>
     </Setting>
-    <Setting Name="LogTopics" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="HideCloseWarning" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="upgraded" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="HideExitWarning" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="HideExitTaskInProgressWarning" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
