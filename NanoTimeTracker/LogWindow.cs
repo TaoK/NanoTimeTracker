@@ -24,6 +24,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using ManagedWinapi;
 
 namespace NanoTimeTracker
 {
@@ -54,6 +55,7 @@ namespace NanoTimeTracker
         private Icon TaskInProgressIcon;
         private Icon NoTaskActiveIcon;
         private Dialogs.TaskInput TaskDialog;
+        private Hotkey TaskHotKey;
 
         #region Event Handlers
 
@@ -61,6 +63,21 @@ namespace NanoTimeTracker
         {
             TaskInProgressIcon = new Icon(typeof(Icons.IconTypePlaceholder), "view-calendar-tasks-combined.ico");
             NoTaskActiveIcon = new Icon(typeof(Icons.IconTypePlaceholder), "edit-clear-history-2-combined.ico");
+
+            TaskHotKey = new Hotkey();
+            TaskHotKey.WindowsKey = true;
+            TaskHotKey.KeyCode = System.Windows.Forms.Keys.T;
+            TaskHotKey.HotkeyPressed += new EventHandler(TaskHotKey_HotkeyPressed);
+            try
+            {
+                TaskHotKey.Enabled = true;
+            }
+            catch (ManagedWinapi.HotkeyAlreadyInUseException)
+            {
+                //TODO: Make this an option, and simply disable if fail on start/load.
+                // -> any error to be displayed should be displayed in real-time on options screen, in a special popup.
+                // -> use ManagedWinapi.ShortcutBox
+            }
 
             if (!Properties.Settings.Default.upgraded)
             {
@@ -106,6 +123,8 @@ namespace NanoTimeTracker
             //assuming we didn't actually exit, reset exiting flag for next time
             if (e.Cancel)
                 _exiting = false;
+            else
+                TaskHotKey.Dispose();
         }
 
         private void LogWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -129,6 +148,11 @@ namespace NanoTimeTracker
             PromptTask();
         }
 
+        void TaskHotKey_HotkeyPressed(object sender, EventArgs e)
+        {
+            PromptTask();
+        }
+        
         private void timer_StatusUpdate_Tick(object sender, System.EventArgs e)
         {
             UpdateStatusDisplay();
