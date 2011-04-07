@@ -39,7 +39,7 @@ namespace NanoTimeTracker
 
         public static string FormatTimeSpan(TimeSpan timeSpan)
         {
-            return String.Format("{0:00}", timeSpan.TotalHours) + ":" + String.Format("{0:00}", timeSpan.Minutes) + ":" + String.Format("{0:00}", timeSpan.Seconds);
+            return String.Format("{0:00}", Math.Floor(timeSpan.TotalHours)) + ":" + String.Format("{0:00}", timeSpan.Minutes) + ":" + String.Format("{0:00}", timeSpan.Seconds);
         }
     }
 }

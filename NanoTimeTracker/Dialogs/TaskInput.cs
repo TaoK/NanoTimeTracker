@@ -164,7 +164,7 @@ namespace NanoTimeTracker.Dialogs
 
             //the presence of a duration description depends on the VALIDITY of a value
             if (TaskStartDate != null && TaskEndDate != null && TaskStartDate.Value < TaskEndDate.Value && chk_TaskCompleted.Checked)
-                chk_TaskCompleted.Text = string.Format("Completed (duration: {0:HH:mm:ss})", new DateTime((TaskEndDate.Value - TaskStartDate.Value).Ticks));
+                chk_TaskCompleted.Text = string.Format("Completed (duration: {0})", Utils.FormatTimeSpan(TaskEndDate.Value - TaskStartDate.Value));
             else
                 chk_TaskCompleted.Text = "Completed";
         }
