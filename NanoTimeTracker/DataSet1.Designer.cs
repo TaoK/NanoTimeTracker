@@ -266,6 +266,8 @@ namespace NanoTimeTracker {
             
             private global::System.Data.DataColumn columnEndDateTime;
             
+            private global::System.Data.DataColumn columnTaskCategory;
+            
             private global::System.Data.DataColumn columnTaskName;
             
             private global::System.Data.DataColumn columnBillableFlag;
@@ -313,6 +315,13 @@ namespace NanoTimeTracker {
             public global::System.Data.DataColumn EndDateTimeColumn {
                 get {
                     return this.columnEndDateTime;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            public global::System.Data.DataColumn TaskCategoryColumn {
+                get {
+                    return this.columnTaskCategory;
                 }
             }
             
@@ -366,11 +375,12 @@ namespace NanoTimeTracker {
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public DataTable1Row AddDataTable1Row(System.DateTime StartDateTime, System.DateTime EndDateTime, string TaskName, bool BillableFlag, double TimeTaken) {
+            public DataTable1Row AddDataTable1Row(System.DateTime StartDateTime, System.DateTime EndDateTime, string TaskCategory, string TaskName, bool BillableFlag, double TimeTaken) {
                 DataTable1Row rowDataTable1Row = ((DataTable1Row)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         StartDateTime,
                         EndDateTime,
+                        TaskCategory,
                         TaskName,
                         BillableFlag,
                         TimeTaken};
@@ -406,6 +416,7 @@ namespace NanoTimeTracker {
             internal void InitVars() {
                 this.columnStartDateTime = base.Columns["StartDateTime"];
                 this.columnEndDateTime = base.Columns["EndDateTime"];
+                this.columnTaskCategory = base.Columns["TaskCategory"];
                 this.columnTaskName = base.Columns["TaskName"];
                 this.columnBillableFlag = base.Columns["BillableFlag"];
                 this.columnTimeTaken = base.Columns["TimeTaken"];
@@ -417,6 +428,8 @@ namespace NanoTimeTracker {
                 base.Columns.Add(this.columnStartDateTime);
                 this.columnEndDateTime = new global::System.Data.DataColumn("EndDateTime", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnEndDateTime);
+                this.columnTaskCategory = new global::System.Data.DataColumn("TaskCategory", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnTaskCategory);
                 this.columnTaskName = new global::System.Data.DataColumn("TaskName", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnTaskName);
                 this.columnBillableFlag = new global::System.Data.DataColumn("BillableFlag", typeof(bool), null, global::System.Data.MappingType.Element);
@@ -584,6 +597,21 @@ namespace NanoTimeTracker {
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            public string TaskCategory {
+                get {
+                    try {
+                        return ((string)(this[this.tableDataTable1.TaskCategoryColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'TaskCategory\' in table \'DataTable1\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDataTable1.TaskCategoryColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public string TaskName {
                 get {
                     try {
@@ -636,6 +664,16 @@ namespace NanoTimeTracker {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public void SetEndDateTimeNull() {
                 this[this.tableDataTable1.EndDateTimeColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            public bool IsTaskCategoryNull() {
+                return this.IsNull(this.tableDataTable1.TaskCategoryColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            public void SetTaskCategoryNull() {
+                this[this.tableDataTable1.TaskCategoryColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

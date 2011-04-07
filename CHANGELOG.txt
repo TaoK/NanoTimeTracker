@@ -1,5 +1,13 @@
 Nano TimeTracker change log
 
+Version 0.9.3 - 2011-04-07
+-----------
+ - Added v basic (hardcoded) HotKey support
+ - Fixed Category storage
+ - Added datagrid double-click handling for editing existing log entries in standard task dialog.
+ - Fixed totals display after manual edits of datagrid
+ - Removed Log Box, was mainly for debugging, didn't add anything to UI.
+
 Version 0.9.2 - 2011-04-05
 -----------
  - Fixed Quit vs Exit messaging

@@ -13,17 +13,24 @@ notably:
  - Overlapping time detection (on manual edit)
  - Autocomplete functionality in task name tracking
  - Hotkey functionality
- - Task category tracking
  - Tracking billability more easily
  - A more elegant and configurable data persistence mechanism
+   - safe database saving
+   - DB file change detection (eg on network share)
+   - Optional external/web-based storage (eg google docs, dropbox, 
+      etc - support a standard if possible), with sync/merge.
  - Options screen
  - Simple stats screen, export screen, etc
  - Computer idle time detection
+ - Translations
  
 This application is released under GPLv3: http://www.gnu.org/licenses/gpl.html
 
 Some icons used in the application are licensed under LGPL, see the 
 "NanoTimeTracker/Icons" folder for details.
+
+This application uses the ManagedWinAPI library, licensed under LGPL; see the 
+"NanoTimeTracker/ManagedWinAPI" folder for details.
 
 Please contact me with any questions, concerns, or issues: my email address starts
 with tao, and is hosted at klerks dot biz.

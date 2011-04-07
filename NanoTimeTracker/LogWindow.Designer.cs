@@ -57,7 +57,6 @@ namespace NanoTimeTracker
             this.btn_Start = new System.Windows.Forms.Button();
             this.btn_Stop = new System.Windows.Forms.Button();
             this.timer_StatusUpdate = new System.Windows.Forms.Timer(this.components);
-            this.txt_LogBox = new System.Windows.Forms.TextBox();
             this.lbl_WorkingTimeValue = new System.Windows.Forms.Label();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.contextMenuStrip_SysTrayContext = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -67,11 +66,6 @@ namespace NanoTimeTracker
             this.exitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.timer_NotifySingleClick = new System.Windows.Forms.Timer(this.components);
             this.dataGridView_TaskLogList = new System.Windows.Forms.DataGridView();
-            this.StartDateTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.EndDateTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TaskName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Billable = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.TimeTaken = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataSet1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.dataSet1 = new NanoTimeTracker.DataSet1();
             this.lbl_TimeTodayValue = new System.Windows.Forms.Label();
@@ -90,6 +84,12 @@ namespace NanoTimeTracker
             this.lbl_BillableTodayLabel = new System.Windows.Forms.Label();
             this.lbl_TimeTodayLabel = new System.Windows.Forms.Label();
             this.grp_Status = new System.Windows.Forms.GroupBox();
+            this.StartDateTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.EndDateTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TaskCategory = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TaskName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Billable = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.TimeTaken = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.contextMenuStrip_SysTrayContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_TaskLogList)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1BindingSource)).BeginInit();
@@ -100,8 +100,8 @@ namespace NanoTimeTracker
             // 
             // btn_Start
             // 
-            this.btn_Start.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_Start.Location = new System.Drawing.Point(536, 361);
+            this.btn_Start.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btn_Start.Location = new System.Drawing.Point(12, 337);
             this.btn_Start.Name = "btn_Start";
             this.btn_Start.Size = new System.Drawing.Size(106, 37);
             this.btn_Start.TabIndex = 0;
@@ -110,31 +110,18 @@ namespace NanoTimeTracker
             // 
             // btn_Stop
             // 
-            this.btn_Stop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_Stop.Location = new System.Drawing.Point(536, 403);
+            this.btn_Stop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btn_Stop.Location = new System.Drawing.Point(12, 379);
             this.btn_Stop.Name = "btn_Stop";
             this.btn_Stop.Size = new System.Drawing.Size(106, 37);
             this.btn_Stop.TabIndex = 1;
-            this.btn_Stop.Text = "Stop";
+            this.btn_Stop.Text = "Stop / Edit";
             this.btn_Stop.Click += new System.EventHandler(this.btn_Stop_Click);
             // 
             // timer_StatusUpdate
             // 
             this.timer_StatusUpdate.Interval = 1000;
             this.timer_StatusUpdate.Tick += new System.EventHandler(this.timer_StatusUpdate_Tick);
-            // 
-            // txt_LogBox
-            // 
-            this.txt_LogBox.AcceptsReturn = true;
-            this.txt_LogBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.txt_LogBox.Location = new System.Drawing.Point(198, 12);
-            this.txt_LogBox.Multiline = true;
-            this.txt_LogBox.Name = "txt_LogBox";
-            this.txt_LogBox.ReadOnly = true;
-            this.txt_LogBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txt_LogBox.Size = new System.Drawing.Size(318, 82);
-            this.txt_LogBox.TabIndex = 2;
             // 
             // lbl_WorkingTimeValue
             // 
@@ -208,6 +195,7 @@ namespace NanoTimeTracker
             this.dataGridView_TaskLogList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.StartDateTime,
             this.EndDateTime,
+            this.TaskCategory,
             this.TaskName,
             this.Billable,
             this.TimeTaken});
@@ -216,47 +204,10 @@ namespace NanoTimeTracker
             this.dataGridView_TaskLogList.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnF2;
             this.dataGridView_TaskLogList.Location = new System.Drawing.Point(8, 27);
             this.dataGridView_TaskLogList.Name = "dataGridView_TaskLogList";
-            this.dataGridView_TaskLogList.Size = new System.Drawing.Size(642, 317);
+            this.dataGridView_TaskLogList.Size = new System.Drawing.Size(801, 293);
             this.dataGridView_TaskLogList.TabIndex = 6;
             this.dataGridView_TaskLogList.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_TaskLogList_CellValueChanged);
-            // 
-            // StartDateTime
-            // 
-            this.StartDateTime.DataPropertyName = "StartDateTime";
-            this.StartDateTime.HeaderText = "StartDateTime";
-            this.StartDateTime.Name = "StartDateTime";
-            this.StartDateTime.Width = 130;
-            // 
-            // EndDateTime
-            // 
-            this.EndDateTime.DataPropertyName = "EndDateTime";
-            this.EndDateTime.HeaderText = "EndDateTime";
-            this.EndDateTime.Name = "EndDateTime";
-            this.EndDateTime.Width = 130;
-            // 
-            // TaskName
-            // 
-            this.TaskName.DataPropertyName = "TaskName";
-            this.TaskName.HeaderText = "TaskName";
-            this.TaskName.Name = "TaskName";
-            this.TaskName.Width = 200;
-            // 
-            // Billable
-            // 
-            this.Billable.DataPropertyName = "BillableFlag";
-            this.Billable.HeaderText = "Billable";
-            this.Billable.Name = "Billable";
-            this.Billable.Width = 50;
-            // 
-            // TimeTaken
-            // 
-            this.TimeTaken.DataPropertyName = "TimeTaken";
-            dataGridViewCellStyle2.Format = "N2";
-            dataGridViewCellStyle2.NullValue = null;
-            this.TimeTaken.DefaultCellStyle = dataGridViewCellStyle2;
-            this.TimeTaken.HeaderText = "TimeTaken";
-            this.TimeTaken.Name = "TimeTaken";
-            this.TimeTaken.Width = 80;
+            this.dataGridView_TaskLogList.DoubleClick += new System.EventHandler(this.dataGridView_TaskLogList_DoubleClick);
             // 
             // dataSet1BindingSource
             // 
@@ -294,7 +245,7 @@ namespace NanoTimeTracker
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(658, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(817, 24);
             this.menuStrip1.TabIndex = 9;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -311,14 +262,14 @@ namespace NanoTimeTracker
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
             this.closeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -334,14 +285,14 @@ namespace NanoTimeTracker
             // deleteLogToolStripMenuItem
             // 
             this.deleteLogToolStripMenuItem.Name = "deleteLogToolStripMenuItem";
-            this.deleteLogToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.deleteLogToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.deleteLogToolStripMenuItem.Text = "Delete Log...";
             this.deleteLogToolStripMenuItem.Click += new System.EventHandler(this.deleteLogToolStripMenuItem_Click);
             // 
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.optionsToolStripMenuItem.Text = "Options...";
             // 
             // helpToolStripMenuItem
@@ -356,14 +307,14 @@ namespace NanoTimeTracker
             // onlineHelpToolStripMenuItem
             // 
             this.onlineHelpToolStripMenuItem.Name = "onlineHelpToolStripMenuItem";
-            this.onlineHelpToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.onlineHelpToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.onlineHelpToolStripMenuItem.Text = "Online Help";
             this.onlineHelpToolStripMenuItem.Click += new System.EventHandler(this.onlineHelpToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboutToolStripMenuItem.Text = "About...";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -396,31 +347,74 @@ namespace NanoTimeTracker
             // 
             // grp_Status
             // 
-            this.grp_Status.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.grp_Status.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.grp_Status.Controls.Add(this.lbl_BillableTodayLabel);
             this.grp_Status.Controls.Add(this.lbl_WorkingTimeLabel);
             this.grp_Status.Controls.Add(this.lbl_BillableTimeTodayValue);
             this.grp_Status.Controls.Add(this.lbl_WorkingTimeValue);
-            this.grp_Status.Controls.Add(this.txt_LogBox);
             this.grp_Status.Controls.Add(this.lbl_TimeTodayLabel);
             this.grp_Status.Controls.Add(this.lbl_TimeTodayValue);
-            this.grp_Status.Location = new System.Drawing.Point(8, 350);
+            this.grp_Status.Location = new System.Drawing.Point(133, 326);
             this.grp_Status.Name = "grp_Status";
-            this.grp_Status.Size = new System.Drawing.Size(522, 100);
+            this.grp_Status.Size = new System.Drawing.Size(258, 100);
             this.grp_Status.TabIndex = 12;
             this.grp_Status.TabStop = false;
             this.grp_Status.Text = "Status";
             // 
+            // StartDateTime
+            // 
+            this.StartDateTime.DataPropertyName = "StartDateTime";
+            this.StartDateTime.HeaderText = "StartDateTime";
+            this.StartDateTime.Name = "StartDateTime";
+            this.StartDateTime.Width = 130;
+            // 
+            // EndDateTime
+            // 
+            this.EndDateTime.DataPropertyName = "EndDateTime";
+            this.EndDateTime.HeaderText = "EndDateTime";
+            this.EndDateTime.Name = "EndDateTime";
+            this.EndDateTime.Width = 130;
+            // 
+            // TaskCategory
+            // 
+            this.TaskCategory.DataPropertyName = "TaskCategory";
+            this.TaskCategory.HeaderText = "TaskCategory";
+            this.TaskCategory.Name = "TaskCategory";
+            this.TaskCategory.Width = 150;
+            // 
+            // TaskName
+            // 
+            this.TaskName.DataPropertyName = "TaskName";
+            this.TaskName.HeaderText = "TaskName";
+            this.TaskName.Name = "TaskName";
+            this.TaskName.Width = 200;
+            // 
+            // Billable
+            // 
+            this.Billable.DataPropertyName = "BillableFlag";
+            this.Billable.HeaderText = "Billable";
+            this.Billable.Name = "Billable";
+            this.Billable.Width = 50;
+            // 
+            // TimeTaken
+            // 
+            this.TimeTaken.DataPropertyName = "TimeTaken";
+            dataGridViewCellStyle2.Format = "N2";
+            dataGridViewCellStyle2.NullValue = null;
+            this.TimeTaken.DefaultCellStyle = dataGridViewCellStyle2;
+            this.TimeTaken.HeaderText = "TimeTaken";
+            this.TimeTaken.Name = "TimeTaken";
+            this.TimeTaken.Width = 80;
+            // 
             // LogWindow
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-            this.ClientSize = new System.Drawing.Size(658, 462);
+            this.ClientSize = new System.Drawing.Size(817, 438);
             this.Controls.Add(this.dataGridView_TaskLogList);
-            this.Controls.Add(this.grp_Status);
             this.Controls.Add(this.btn_Stop);
-            this.Controls.Add(this.btn_Start);
             this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.btn_Start);
+            this.Controls.Add(this.grp_Status);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(436, 306);
@@ -444,7 +438,6 @@ namespace NanoTimeTracker
 
         private Button btn_Start;
         private Button btn_Stop;
-        private TextBox txt_LogBox;
         private Label lbl_WorkingTimeValue;
         private Label lbl_TimeTodayValue;
         private Label lbl_BillableTimeTodayValue;
@@ -454,11 +447,6 @@ namespace NanoTimeTracker
         private DataGridView dataGridView_TaskLogList;
         private BindingSource dataSet1BindingSource;
         private DataSet1 dataSet1;
-        private DataGridViewTextBoxColumn StartDateTime;
-        private DataGridViewTextBoxColumn EndDateTime;
-        private DataGridViewTextBoxColumn TaskName;
-        private DataGridViewCheckBoxColumn Billable;
-        private DataGridViewTextBoxColumn TimeTaken;
         private MenuStrip menuStrip1;
         private Label lbl_WorkingTimeLabel;
         private Label lbl_TimeTodayLabel;
@@ -478,6 +466,12 @@ namespace NanoTimeTracker
         private ToolStripMenuItem startTaskToolStripMenuItem;
         private ToolStripMenuItem stopEditTaskToolStripMenuItem;
         private ToolStripMenuItem exitToolStripMenuItem1;
+        private DataGridViewTextBoxColumn StartDateTime;
+        private DataGridViewTextBoxColumn EndDateTime;
+        private DataGridViewTextBoxColumn TaskCategory;
+        private DataGridViewTextBoxColumn TaskName;
+        private DataGridViewCheckBoxColumn Billable;
+        private DataGridViewTextBoxColumn TimeTaken;
 
     }
 }
