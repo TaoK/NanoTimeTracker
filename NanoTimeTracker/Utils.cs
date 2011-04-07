@@ -36,5 +36,10 @@ namespace NanoTimeTracker
                 .Replace("<MYDOCUMENTS>", Environment.GetFolderPath(Environment.SpecialFolder.Personal).ToString()
                 );
         }
+
+        public static string FormatTimeSpan(TimeSpan timeSpan)
+        {
+            return String.Format("{0:00}", timeSpan.TotalHours) + ":" + String.Format("{0:00}", timeSpan.Minutes) + ":" + String.Format("{0:00}", timeSpan.Seconds);
+        }
     }
 }

@@ -21,14 +21,11 @@ Version 0.9.2 - 2011-04-05
  - Implemented Upgrade of settings from version to version
  - Implemented new Settings Provider, so you can save settings and data with the executable OR in a user data folder.
 
-
-
 Version 0.9.1
 -----------
  - Cleaned up UI to use menus
  - Added about box with GPL license details
  
-
 Version 0.9
 -----------
  - Misc window mgmt fixes (prevent multiple task dialogs, handle initial focus, etc)
@@ -37,7 +34,6 @@ Version 0.9
  - Fix task entries to display seconds in log window
  - Fix systray baloon message and log window to display current total times
  
-
 Version 0.8
 -----------
  - Initial Release

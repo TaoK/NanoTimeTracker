@@ -232,6 +232,7 @@ namespace NanoTimeTracker
                     //looks like we should consider it, call the function that does the work.
                     MaintainDurationByDataGrid(e.RowIndex);
                     CheckHourTotals();
+                    UpdateStatusDisplay();
                 }
 
                 if (false)
@@ -558,20 +559,22 @@ namespace NanoTimeTracker
             System.TimeSpan TimeSinceTaskStart;
             System.TimeSpan TotalTimeToday;
             System.TimeSpan TotalBillableTimeToday;
-            String FriendlyTimeSinceTaskStart;
-            String FriendlyTimeToday;
-            String FriendlyBillableTimeToday;
-            TimeSinceTaskStart = System.DateTime.Now.Subtract(_taskInProgressStartTime);
+
+            if (_taskInProgress)
+                TimeSinceTaskStart = System.DateTime.Now.Subtract(_taskInProgressStartTime);
+            else
+                TimeSinceTaskStart = new TimeSpan();
             TotalTimeToday = TimeSinceTaskStart + new TimeSpan((int)Math.Floor(_previousHours), (int)Math.Floor((_previousHours * 60) % 60), (int)Math.Floor((_previousHours * 60 * 60) % 60));
             TotalBillableTimeToday = TimeSinceTaskStart + new TimeSpan((int)Math.Floor(_previousBillableHours), (int)Math.Floor((_previousBillableHours * 60) % 60), (int)Math.Floor((_previousBillableHours * 60 * 60) % 60));
-            FriendlyTimeSinceTaskStart = String.Format("{0:00}", TimeSinceTaskStart.Hours) + ":" + String.Format("{0:00}", TimeSinceTaskStart.Minutes) + ":" + String.Format("{0:00}", TimeSinceTaskStart.Seconds);
-            FriendlyTimeToday = String.Format("{0:00}", TotalTimeToday.Hours) + ":" + String.Format("{0:00}", TotalTimeToday.Minutes) + ":" + String.Format("{0:00}", TotalTimeToday.Seconds);
-            FriendlyBillableTimeToday = String.Format("{0:00}", TotalBillableTimeToday.Hours) + ":" + String.Format("{0:00}", TotalBillableTimeToday.Minutes) + ":" + String.Format("{0:00}", TotalBillableTimeToday.Seconds);
 
-            lbl_WorkingTimeValue.Text = FriendlyTimeSinceTaskStart;
-            lbl_TimeTodayValue.Text = FriendlyTimeToday;
-            lbl_BillableTimeTodayValue.Text = FriendlyBillableTimeToday;
-            notifyIcon1.Text = "Time Logger - " + FriendlyTimeSinceTaskStart;
+            lbl_WorkingTimeValue.Text = Utils.FormatTimeSpan(TimeSinceTaskStart);
+            lbl_TimeTodayValue.Text = Utils.FormatTimeSpan(TotalTimeToday);
+            lbl_BillableTimeTodayValue.Text = Utils.FormatTimeSpan(TotalBillableTimeToday);
+
+            if (_taskInProgress)
+                notifyIcon1.Text = "Time Logger - " + Utils.FormatTimeSpan(TimeSinceTaskStart);
+            else
+                notifyIcon1.Text = "Time Logger";
         }
 
         #endregion
