@@ -127,17 +127,6 @@ namespace NanoTimeTracker
                 TaskHotKey.Dispose();
         }
 
-        private void LogWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            //WANT TO DO: avoid exit (do close) if clicked the exit button
-            // -> Might need to handle exit differently? All state outside the window?
-            if (timer_StatusUpdate.Enabled == true)
-            {
-                PromptTask();
-                //TODO: handle cancellation to avoid exit?
-            }
-        }
-
         private void btn_Stop_Click(object sender, System.EventArgs e)
         {
             PromptTask();
@@ -528,7 +517,6 @@ namespace NanoTimeTracker
                         }
                     }
 
-
                     //retrieve existing totals for display
                     CheckHourTotals();
 
@@ -536,14 +524,13 @@ namespace NanoTimeTracker
                     UpdateControlDisplayConsistency();
                     if (_taskInProgress)
                     {
-                        lbl_WorkingTimeValue.Text = "Starting...";
                         timer_StatusUpdate.Start();
                         btn_Stop.Focus();
                     }
                     else
                     {
                         timer_StatusUpdate.Stop();
-                        lbl_WorkingTimeValue.Text = "00:00:00";
+						UpdateStatusDisplay();
                         btn_Start.Focus();
                     }
                 }
