@@ -60,7 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigurableFileSettingsProvider.cs" />
+    <Compile Include="FrameworkClassReplacements\LocalFileSettingsProviderConfigurable.cs" />
     <Compile Include="Dialogs\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -79,7 +79,6 @@
       <DependentUpon>DataSet1.xsd</DependentUpon>
     </Compile>
     <Compile Include="Properties\Settings.cs" />
-    <Compile Include="WindowHacker.cs" />
     <Compile Include="Icons\IconTypePlaceholder.cs" />
     <Compile Include="LogWindow.cs">
       <SubType>Form</SubType>
@@ -131,6 +130,10 @@
       <DependentUpon>TaskInput.cs</DependentUpon>
     </Compile>
     <Compile Include="Utils.cs" />
+    <Compile Include="FrameworkClassReplacements\DataGridViewWithRowContextMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WindowHacker.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Dialogs\AboutBox.resx">

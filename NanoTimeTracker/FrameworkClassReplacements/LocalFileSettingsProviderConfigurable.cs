@@ -25,9 +25,9 @@ using System.Text;
 using System.IO;
 using System.Xml;
 
-namespace NanoTimeTracker
+namespace NanoTimeTracker.FrameworkClassReplacements
 {
-    class ConfigurableFileSettingsProvider : SettingsProvider, IApplicationSettingsProvider
+    class LocalFileSettingsProviderConfigurable : SettingsProvider, IApplicationSettingsProvider
     {
         //This is a very basic replacement for LocalFileSettingsProvider, giving some small measure of control
         // over the location of the configuration file, placing it explicitly in "UserAppDataPath" (so that you 

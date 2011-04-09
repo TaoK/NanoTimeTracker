@@ -141,7 +141,7 @@ namespace NanoTimeTracker
         {
             PromptTask();
         }
-        
+
         private void timer_StatusUpdate_Tick(object sender, System.EventArgs e)
         {
             UpdateStatusDisplay();
@@ -216,7 +216,9 @@ namespace NanoTimeTracker
             {
                 if (dataGridView_TaskLogList.Columns[e.ColumnIndex].Name == "StartDateTime"
                     || dataGridView_TaskLogList.Columns[e.ColumnIndex].Name == "EndDateTime"
-                    || dataGridView_TaskLogList.Columns[e.ColumnIndex].Name == "TimeTaken")
+                    || dataGridView_TaskLogList.Columns[e.ColumnIndex].Name == "TimeTaken"
+                    || dataGridView_TaskLogList.Columns[e.ColumnIndex].Name == "BillableFlag"
+                    )
                 {
                     //looks like we should consider it, call the function that does the work.
                     MaintainDurationByDataGrid(e.RowIndex);
@@ -274,6 +276,7 @@ namespace NanoTimeTracker
 
         private void dataGridView_TaskLogList_DoubleClick(object sender, EventArgs e)
         {
+            //TODO: clean up right double-click handling (right double-click doesn't mean anything normally right?)
             if (dataGridView_TaskLogList.SelectedRows.Count == 1 && !dataGridView_TaskLogList.SelectedRows[0].IsNewRow)
                 PromptTask((DateTime)dataGridView_TaskLogList.SelectedRows[0].Cells[0].Value);
             else if (dataGridView_TaskLogList.SelectedCells.Count == 1 && !dataGridView_TaskLogList.SelectedCells[0].OwningRow.IsNewRow && !dataGridView_TaskLogList.SelectedCells[0].IsInEditMode)
@@ -357,7 +360,7 @@ namespace NanoTimeTracker
                 notifyIcon1.Icon = TaskInProgressIcon;
             else if (!_taskInProgress && notifyIcon1.Icon != NoTaskActiveIcon)
                 notifyIcon1.Icon = NoTaskActiveIcon;
-            
+
             if (_taskInProgress && this.Icon != TaskInProgressIcon)
                 this.Icon = TaskInProgressIcon;
             else if (!_taskInProgress && this.Icon != NoTaskActiveIcon)
@@ -380,6 +383,7 @@ namespace NanoTimeTracker
                 {
                     //bring the task dialog to the foreground
                     WindowHacker.SetForegroundWindow(TaskDialog.Handle);
+
                 }
                 else
                 {
@@ -530,7 +534,7 @@ namespace NanoTimeTracker
                     else
                     {
                         timer_StatusUpdate.Stop();
-						UpdateStatusDisplay();
+                        UpdateStatusDisplay();
                         btn_Start.Focus();
                     }
                 }
@@ -548,20 +552,32 @@ namespace NanoTimeTracker
             System.TimeSpan TotalBillableTimeToday;
 
             if (_taskInProgress)
+            {
                 TimeSinceTaskStart = System.DateTime.Now.Subtract(_taskInProgressStartTime);
+                notifyIcon1.Text = "Time Logger - " + Utils.FormatTimeSpan(TimeSinceTaskStart);
+
+                if (!lbl_CurrentTaskValue.Text.Equals(_taskInProgressDescription))
+                    lbl_CurrentTaskValue.Text = _taskInProgressDescription;
+                if (!lbl_CategoryValue.Text.Equals(_taskInProgressCategory))
+                    lbl_CategoryValue.Text = _taskInProgressCategory;
+            }
             else
+            {
                 TimeSinceTaskStart = new TimeSpan();
+                notifyIcon1.Text = "Time Logger";
+
+                if (!lbl_CurrentTaskValue.Text.Equals(""))
+                    lbl_CurrentTaskValue.Text = "";
+                if (!lbl_CategoryValue.Text.Equals(""))
+                    lbl_CategoryValue.Text = "";
+            }
+            
             TotalTimeToday = TimeSinceTaskStart + new TimeSpan((int)Math.Floor(_previousHours), (int)Math.Floor((_previousHours * 60) % 60), (int)Math.Floor((_previousHours * 60 * 60) % 60));
             TotalBillableTimeToday = TimeSinceTaskStart + new TimeSpan((int)Math.Floor(_previousBillableHours), (int)Math.Floor((_previousBillableHours * 60) % 60), (int)Math.Floor((_previousBillableHours * 60 * 60) % 60));
 
             lbl_WorkingTimeValue.Text = Utils.FormatTimeSpan(TimeSinceTaskStart);
             lbl_TimeTodayValue.Text = Utils.FormatTimeSpan(TotalTimeToday);
             lbl_BillableTimeTodayValue.Text = Utils.FormatTimeSpan(TotalBillableTimeToday);
-
-            if (_taskInProgress)
-                notifyIcon1.Text = "Time Logger - " + Utils.FormatTimeSpan(TimeSinceTaskStart);
-            else
-                notifyIcon1.Text = "Time Logger";
         }
 
         #endregion
