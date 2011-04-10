@@ -65,11 +65,9 @@ namespace NanoTimeTracker
             this.stopEditTaskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.timer_NotifySingleClick = new System.Windows.Forms.Timer(this.components);
-            this.dataSet1BindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.dataSet1 = new NanoTimeTracker.DataSet1();
             this.contextMenuStrip_DataGrid = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.updateTaskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.resumeCopyTaskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resumeTaskNowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitTaskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteTaskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lbl_TimeTodayValue = new System.Windows.Forms.Label();
@@ -88,10 +86,12 @@ namespace NanoTimeTracker
             this.lbl_BillableTodayLabel = new System.Windows.Forms.Label();
             this.lbl_TimeTodayLabel = new System.Windows.Forms.Label();
             this.grp_Status = new System.Windows.Forms.GroupBox();
-            this.lbl_CurrentTaskLabel = new System.Windows.Forms.Label();
-            this.lbl_CategoryLabel = new System.Windows.Forms.Label();
-            this.lbl_CurrentTaskValue = new System.Windows.Forms.Label();
             this.lbl_CategoryValue = new System.Windows.Forms.Label();
+            this.lbl_CurrentTaskValue = new System.Windows.Forms.Label();
+            this.lbl_CategoryLabel = new System.Windows.Forms.Label();
+            this.lbl_CurrentTaskLabel = new System.Windows.Forms.Label();
+            this.dataSet1BindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.dataSet1 = new NanoTimeTracker.DataSet1();
             this.dataGridView_TaskLogList = new NanoTimeTracker.FrameworkClassReplacements.DataGridViewWithRowContextMenu();
             this.StartDateTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EndDateTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -100,11 +100,11 @@ namespace NanoTimeTracker
             this.Billable = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.TimeTaken = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.contextMenuStrip_SysTrayContext.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataSet1BindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).BeginInit();
             this.contextMenuStrip_DataGrid.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.grp_Status.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataSet1BindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_TaskLogList)).BeginInit();
             this.SuspendLayout();
             // 
@@ -195,50 +195,44 @@ namespace NanoTimeTracker
             this.timer_NotifySingleClick.Interval = 500;
             this.timer_NotifySingleClick.Tick += new System.EventHandler(this.timer_NotifySingleClick_Tick);
             // 
-            // dataSet1BindingSource
-            // 
-            this.dataSet1BindingSource.DataSource = this.dataSet1;
-            this.dataSet1BindingSource.Position = 0;
-            // 
-            // dataSet1
-            // 
-            this.dataSet1.DataSetName = "DataSet1";
-            this.dataSet1.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
-            // 
             // contextMenuStrip_DataGrid
             // 
             this.contextMenuStrip_DataGrid.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.updateTaskToolStripMenuItem,
-            this.resumeCopyTaskToolStripMenuItem,
+            this.resumeTaskNowToolStripMenuItem,
             this.splitTaskToolStripMenuItem,
             this.deleteTaskToolStripMenuItem});
             this.contextMenuStrip_DataGrid.Name = "contextMenuStrip_DataGrid";
-            this.contextMenuStrip_DataGrid.Size = new System.Drawing.Size(179, 92);
+            this.contextMenuStrip_DataGrid.Size = new System.Drawing.Size(162, 114);
             // 
             // updateTaskToolStripMenuItem
             // 
             this.updateTaskToolStripMenuItem.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.updateTaskToolStripMenuItem.Name = "updateTaskToolStripMenuItem";
-            this.updateTaskToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.updateTaskToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.updateTaskToolStripMenuItem.Text = "Update Task...";
+            this.updateTaskToolStripMenuItem.Click += new System.EventHandler(this.updateTaskToolStripMenuItem_Click);
             // 
-            // resumeCopyTaskToolStripMenuItem
+            // resumeTaskNowToolStripMenuItem
             // 
-            this.resumeCopyTaskToolStripMenuItem.Name = "resumeCopyTaskToolStripMenuItem";
-            this.resumeCopyTaskToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
-            this.resumeCopyTaskToolStripMenuItem.Text = "Resume/Copy Task...";
+            this.resumeTaskNowToolStripMenuItem.Name = "resumeTaskNowToolStripMenuItem";
+            this.resumeTaskNowToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.resumeTaskNowToolStripMenuItem.Text = "Resume Task Now";
+            this.resumeTaskNowToolStripMenuItem.Click += new System.EventHandler(this.resumeTaskNowToolStripMenuItem_Click);
             // 
             // splitTaskToolStripMenuItem
             // 
             this.splitTaskToolStripMenuItem.Name = "splitTaskToolStripMenuItem";
-            this.splitTaskToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
-            this.splitTaskToolStripMenuItem.Text = "Split Task";
+            this.splitTaskToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.splitTaskToolStripMenuItem.Text = "Split Task...";
+            this.splitTaskToolStripMenuItem.Click += new System.EventHandler(this.splitTaskToolStripMenuItem_Click);
             // 
             // deleteTaskToolStripMenuItem
             // 
             this.deleteTaskToolStripMenuItem.Name = "deleteTaskToolStripMenuItem";
-            this.deleteTaskToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.deleteTaskToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.deleteTaskToolStripMenuItem.Text = "Delete Task...";
+            this.deleteTaskToolStripMenuItem.Click += new System.EventHandler(this.deleteTaskToolStripMenuItem_Click);
             // 
             // lbl_TimeTodayValue
             // 
@@ -387,23 +381,14 @@ namespace NanoTimeTracker
             this.grp_Status.TabStop = false;
             this.grp_Status.Text = "Status";
             // 
-            // lbl_CurrentTaskLabel
+            // lbl_CategoryValue
             // 
-            this.lbl_CurrentTaskLabel.AutoSize = true;
-            this.lbl_CurrentTaskLabel.Location = new System.Drawing.Point(209, 23);
-            this.lbl_CurrentTaskLabel.Name = "lbl_CurrentTaskLabel";
-            this.lbl_CurrentTaskLabel.Size = new System.Drawing.Size(74, 13);
-            this.lbl_CurrentTaskLabel.TabIndex = 13;
-            this.lbl_CurrentTaskLabel.Text = "Current Task: ";
-            // 
-            // lbl_CategoryLabel
-            // 
-            this.lbl_CategoryLabel.AutoSize = true;
-            this.lbl_CategoryLabel.Location = new System.Drawing.Point(209, 46);
-            this.lbl_CategoryLabel.Name = "lbl_CategoryLabel";
-            this.lbl_CategoryLabel.Size = new System.Drawing.Size(52, 13);
-            this.lbl_CategoryLabel.TabIndex = 14;
-            this.lbl_CategoryLabel.Text = "Category:";
+            this.lbl_CategoryValue.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbl_CategoryValue.Location = new System.Drawing.Point(289, 46);
+            this.lbl_CategoryValue.Name = "lbl_CategoryValue";
+            this.lbl_CategoryValue.Size = new System.Drawing.Size(365, 23);
+            this.lbl_CategoryValue.TabIndex = 16;
             // 
             // lbl_CurrentTaskValue
             // 
@@ -414,14 +399,33 @@ namespace NanoTimeTracker
             this.lbl_CurrentTaskValue.Size = new System.Drawing.Size(365, 23);
             this.lbl_CurrentTaskValue.TabIndex = 15;
             // 
-            // lbl_CategoryValue
+            // lbl_CategoryLabel
             // 
-            this.lbl_CategoryValue.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.lbl_CategoryValue.Location = new System.Drawing.Point(289, 46);
-            this.lbl_CategoryValue.Name = "lbl_CategoryValue";
-            this.lbl_CategoryValue.Size = new System.Drawing.Size(365, 23);
-            this.lbl_CategoryValue.TabIndex = 16;
+            this.lbl_CategoryLabel.AutoSize = true;
+            this.lbl_CategoryLabel.Location = new System.Drawing.Point(209, 46);
+            this.lbl_CategoryLabel.Name = "lbl_CategoryLabel";
+            this.lbl_CategoryLabel.Size = new System.Drawing.Size(52, 13);
+            this.lbl_CategoryLabel.TabIndex = 14;
+            this.lbl_CategoryLabel.Text = "Category:";
+            // 
+            // lbl_CurrentTaskLabel
+            // 
+            this.lbl_CurrentTaskLabel.AutoSize = true;
+            this.lbl_CurrentTaskLabel.Location = new System.Drawing.Point(209, 23);
+            this.lbl_CurrentTaskLabel.Name = "lbl_CurrentTaskLabel";
+            this.lbl_CurrentTaskLabel.Size = new System.Drawing.Size(74, 13);
+            this.lbl_CurrentTaskLabel.TabIndex = 13;
+            this.lbl_CurrentTaskLabel.Text = "Current Task: ";
+            // 
+            // dataSet1BindingSource
+            // 
+            this.dataSet1BindingSource.DataSource = this.dataSet1;
+            this.dataSet1BindingSource.Position = 0;
+            // 
+            // dataSet1
+            // 
+            this.dataSet1.DataSetName = "DataSet1";
+            this.dataSet1.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
             // 
             // dataGridView_TaskLogList
             // 
@@ -447,7 +451,10 @@ namespace NanoTimeTracker
             this.dataGridView_TaskLogList.Size = new System.Drawing.Size(789, 246);
             this.dataGridView_TaskLogList.TabIndex = 6;
             this.dataGridView_TaskLogList.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_TaskLogList_CellValueChanged);
+            this.dataGridView_TaskLogList.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dataGridView_TaskLogList_UserDeletingRow);
             this.dataGridView_TaskLogList.DoubleClick += new System.EventHandler(this.dataGridView_TaskLogList_DoubleClick);
+            this.dataGridView_TaskLogList.UserDeletedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.dataGridView_TaskLogList_UserDeletedRow);
+            this.dataGridView_TaskLogList.CurrentCellDirtyStateChanged += new System.EventHandler(this.dataGridView_TaskLogList_CurrentCellDirtyStateChanged);
             // 
             // StartDateTime
             // 
@@ -511,13 +518,13 @@ namespace NanoTimeTracker
             this.Load += new System.EventHandler(this.LogWindow_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LogWindow_FormClosing);
             this.contextMenuStrip_SysTrayContext.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataSet1BindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).EndInit();
             this.contextMenuStrip_DataGrid.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.grp_Status.ResumeLayout(false);
             this.grp_Status.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataSet1BindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_TaskLogList)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -563,7 +570,7 @@ namespace NanoTimeTracker
         private DataGridViewTextBoxColumn TimeTaken;
         private ContextMenuStrip contextMenuStrip_DataGrid;
         private ToolStripMenuItem updateTaskToolStripMenuItem;
-        private ToolStripMenuItem resumeCopyTaskToolStripMenuItem;
+        private ToolStripMenuItem resumeTaskNowToolStripMenuItem;
         private ToolStripMenuItem splitTaskToolStripMenuItem;
         private ToolStripMenuItem deleteTaskToolStripMenuItem;
         private Label lbl_CategoryValue;

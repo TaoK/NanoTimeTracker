@@ -129,6 +129,7 @@
     <Compile Include="Dialogs\TaskInput.designer.cs">
       <DependentUpon>TaskInput.cs</DependentUpon>
     </Compile>
+    <Compile Include="UIUtils.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="FrameworkClassReplacements\DataGridViewWithRowContextMenu.cs">
       <SubType>Component</SubType>

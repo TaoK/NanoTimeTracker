@@ -440,6 +440,9 @@ namespace NanoTimeTracker {
                                 this.columnStartDateTime}, true));
                 this.columnStartDateTime.AllowDBNull = false;
                 this.columnStartDateTime.Unique = true;
+                this.columnTaskCategory.AllowDBNull = false;
+                this.columnTaskName.AllowDBNull = false;
+                this.columnBillableFlag.AllowDBNull = false;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -599,12 +602,7 @@ namespace NanoTimeTracker {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public string TaskCategory {
                 get {
-                    try {
-                        return ((string)(this[this.tableDataTable1.TaskCategoryColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'TaskCategory\' in table \'DataTable1\' is DBNull.", e);
-                    }
+                    return ((string)(this[this.tableDataTable1.TaskCategoryColumn]));
                 }
                 set {
                     this[this.tableDataTable1.TaskCategoryColumn] = value;
@@ -614,12 +612,7 @@ namespace NanoTimeTracker {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public string TaskName {
                 get {
-                    try {
-                        return ((string)(this[this.tableDataTable1.TaskNameColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'TaskName\' in table \'DataTable1\' is DBNull.", e);
-                    }
+                    return ((string)(this[this.tableDataTable1.TaskNameColumn]));
                 }
                 set {
                     this[this.tableDataTable1.TaskNameColumn] = value;
@@ -629,12 +622,7 @@ namespace NanoTimeTracker {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public bool BillableFlag {
                 get {
-                    try {
-                        return ((bool)(this[this.tableDataTable1.BillableFlagColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'BillableFlag\' in table \'DataTable1\' is DBNull.", e);
-                    }
+                    return ((bool)(this[this.tableDataTable1.BillableFlagColumn]));
                 }
                 set {
                     this[this.tableDataTable1.BillableFlagColumn] = value;
@@ -664,36 +652,6 @@ namespace NanoTimeTracker {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public void SetEndDateTimeNull() {
                 this[this.tableDataTable1.EndDateTimeColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public bool IsTaskCategoryNull() {
-                return this.IsNull(this.tableDataTable1.TaskCategoryColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public void SetTaskCategoryNull() {
-                this[this.tableDataTable1.TaskCategoryColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public bool IsTaskNameNull() {
-                return this.IsNull(this.tableDataTable1.TaskNameColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public void SetTaskNameNull() {
-                this[this.tableDataTable1.TaskNameColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public bool IsBillableFlagNull() {
-                return this.IsNull(this.tableDataTable1.BillableFlagColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public void SetBillableFlagNull() {
-                this[this.tableDataTable1.BillableFlagColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

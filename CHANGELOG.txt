@@ -1,5 +1,13 @@
 Nano TimeTracker change log
 
+Version 0.9.4 - 2011-04-09
+-----------
+ - Added context menu on task log grid:
+   - Update
+   - Resume (as new task)
+   - Split
+   - Delete
+
 Version 0.9.3 - 2011-04-07
 -----------
  - Added v basic (hardcoded) HotKey support

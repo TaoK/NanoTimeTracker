@@ -41,7 +41,7 @@ namespace NanoTimeTracker.Dialogs
             string GPLText = "";
             try  
             {  
-                Stream fileStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(this.GetType().Namespace + ".LICENSE.txt");  
+                Stream fileStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(Program).Namespace + ".LICENSE.txt");  
                 StreamReader textReader = new StreamReader(fileStream, System.Text.Encoding.ASCII);
                 GPLText = textReader.ReadToEnd();
                 textReader.Close();

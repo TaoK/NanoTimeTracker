@@ -94,18 +94,10 @@ namespace NanoTimeTracker.Dialogs
             }
         }
 
-        public void SetPrompt(DateTime startTime, DateTime? endTime, string taskDescription, string taskCategory, bool? taskBillable)
+        public void SetPrompt(string message, string title, DateTime startTime, DateTime? endTime, string taskDescription, string taskCategory, bool? taskBillable, bool endTimeEditable)
         {
-            if (endTime == null)
-            {
-                this.Text = "Task Entry - New Task";
-                lbl_EntryPrompt.Text = "New task details:";
-            }
-            else
-            {
-                this.Text = "Task Entry - Confirm Task Details / End Task";
-                lbl_EntryPrompt.Text = "Task details:";
-            }
+            lbl_EntryPrompt.Text = message;
+            this.Text = title;
 
             TaskStartDate = startTime;
             TaskEndDate = endTime;
@@ -125,7 +117,8 @@ namespace NanoTimeTracker.Dialogs
             else
                 TaskBillable = true;
 
-
+            txt_CompletedAt.ReadOnly = !endTimeEditable;
+            chk_TaskCompleted.Enabled = endTimeEditable;
         }
 
         private void TaskInput_Load(object sender, EventArgs e)

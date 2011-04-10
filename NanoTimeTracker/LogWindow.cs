@@ -102,11 +102,11 @@ namespace NanoTimeTracker
             }
             else
             {
-                if (DismissableWarning("Exiting Application", "You are exiting the Nano TimeTracker application - to later track time later you will need to start it again. If you just want to hide the window, then cancel here and choose \"Close\" instead.", "HideExitWarning"))
+                if (UIUtils.DismissableWarning("Exiting Application", "You are exiting the Nano TimeTracker application - to later track time later you will need to start it again. If you just want to hide the window, then cancel here and choose \"Close\" instead.", "HideExitWarning"))
                 {
                     if (_taskInProgress)
                     {
-                        if (!DismissableWarning("Exiting - Task In Progress", "You are exiting Nano TimeTracker, but you still have a task in progress. The next time you start the application, you will be asked to confirm when that task completed.", "HideExitTaskInProgressWarning"))
+                        if (!UIUtils.DismissableWarning("Exiting - Task In Progress", "You are exiting Nano TimeTracker, but you still have a task in progress. The next time you start the application, you will be asked to confirm when that task completed.", "HideExitTaskInProgressWarning"))
                         {
                             //user cancelled on the exit task in progress warning
                             e.Cancel = true;
@@ -222,13 +222,6 @@ namespace NanoTimeTracker
                 {
                     //looks like we should consider it, call the function that does the work.
                     MaintainDurationByDataGrid(e.RowIndex);
-                    CheckHourTotals();
-                    UpdateStatusDisplay();
-                }
-
-                if (false)
-                {
-                    //TODO: Add automatic updating of "current" state if the row being edited was the current row.
                 }
 
                 if (false)
@@ -236,9 +229,26 @@ namespace NanoTimeTracker
                     //TODO: throw validation errors if you're trying to do somethng illegal, like delete end date?
                 }
 
-                //persist changes
+                //dirty hack to flush value to dataset (alternative method was to set currentcell to a cell in a 
+                //different row, but was horrible hack and failed when only one row existed!). Found this cleaner 
+                //suggestion on StackOverflow:
+                // http://stackoverflow.com/questions/963601/datagridview-value-does-not-gets-saved-if-selection-is-not-lost-from-a-cell
+                dataGridView_TaskLogList.CurrentCell = null;
+                dataGridView_TaskLogList.CurrentCell = dataGridView_TaskLogList.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
                 SaveTimeTrackingDB();
+                UpdateStateFromData(false);
             }
+        }
+
+        private void dataGridView_TaskLogList_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (false && dataGridView_TaskLogList.IsCurrentCellDirty)
+            {
+                
+                dataGridView_TaskLogList.CommitEdit(DataGridViewDataErrorContexts.Commit);
+            }
+        
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -277,11 +287,101 @@ namespace NanoTimeTracker
         private void dataGridView_TaskLogList_DoubleClick(object sender, EventArgs e)
         {
             //TODO: clean up right double-click handling (right double-click doesn't mean anything normally right?)
+
+            //first select the row whose cell was double-clicked (if single cell)
+            if (dataGridView_TaskLogList.SelectedCells.Count == 1 && !dataGridView_TaskLogList.SelectedCells[0].OwningRow.IsNewRow && !dataGridView_TaskLogList.SelectedCells[0].IsInEditMode)
+                dataGridView_TaskLogList.Rows[dataGridView_TaskLogList.SelectedCells[0].RowIndex].Selected = true;
+
+            //then display the edit dialog (if a single row is selected)
             if (dataGridView_TaskLogList.SelectedRows.Count == 1 && !dataGridView_TaskLogList.SelectedRows[0].IsNewRow)
                 PromptTask((DateTime)dataGridView_TaskLogList.SelectedRows[0].Cells[0].Value);
-            else if (dataGridView_TaskLogList.SelectedCells.Count == 1 && !dataGridView_TaskLogList.SelectedCells[0].OwningRow.IsNewRow && !dataGridView_TaskLogList.SelectedCells[0].IsInEditMode)
-                PromptTask((DateTime)dataGridView_TaskLogList.SelectedCells[0].OwningRow.Cells[0].Value);
         }
+
+
+        private void updateTaskToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dataGridView_TaskLogList.SelectedRows.Count == 1)
+                PromptTask((DateTime)dataGridView_TaskLogList.SelectedRows[0].Cells[0].Value);
+        }
+
+        private void resumeTaskNowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dataGridView_TaskLogList.SelectedRows.Count == 1)
+            {
+                DateTime previousStartDate = (DateTime)dataGridView_TaskLogList.SelectedRows[0].Cells[0].Value;
+                DateTime? previousEndDate;
+                string previousDescription;
+                string previousCategory;
+                bool previousTimeBillable;
+                if (GetTaskDetailsByTask(previousStartDate, out previousEndDate, out previousDescription, out previousCategory, out previousTimeBillable))
+                {
+                    StartLoggingTask(DateTime.Now, previousDescription, previousCategory, previousTimeBillable);
+                    UpdateStateFromData(true);
+                }
+                else
+                {
+                    MessageBox.Show("Failed to retrieve task details!");
+                }
+            }
+        }
+
+        private void splitTaskToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dataGridView_TaskLogList.SelectedRows.Count == 1)
+            {
+                DateTime previousStartDate = (DateTime)dataGridView_TaskLogList.SelectedRows[0].Cells[0].Value;
+                DateTime? previousEndDate;
+                string previousDescription;
+                string previousCategory;
+                bool previousTimeBillable;
+                TimeSpan previousDuration;
+                if (GetTaskDetailsByTask(previousStartDate, out previousEndDate, out previousDescription, out previousCategory, out previousTimeBillable) && previousEndDate != null)
+                {
+                    previousDuration = previousStartDate - previousEndDate.Value;
+                    TaskDialog.SetPrompt("Please provide details for the new second task:", "Split Task - Provide New Details", (previousStartDate - new TimeSpan(previousDuration.Ticks/2)), previousEndDate, previousDescription, previousCategory, previousTimeBillable, false);
+                    if (TaskDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        UpdateLogTask(previousStartDate, previousStartDate, TaskDialog.TaskStartDate.Value, previousDescription, previousCategory, previousTimeBillable);
+                        StartLoggingTask(TaskDialog.TaskStartDate.Value, TaskDialog.TaskDescription, TaskDialog.TaskCategory, TaskDialog.TaskBillable);
+                        EndLoggingOpenTask(TaskDialog.TaskStartDate.Value, TaskDialog.TaskEndDate.Value, TaskDialog.TaskDescription, TaskDialog.TaskCategory, TaskDialog.TaskBillable);
+                        UpdateStateFromData(false);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Failed to retrieve task details!");
+                }
+            }
+        }
+
+        private void deleteTaskToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dataGridView_TaskLogList.SelectedRows.Count == 1)
+            {
+                if (MessageBox.Show("Are you sure you want to delete this task entry?", "Really Delete?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    dataGridView_TaskLogList.Rows.Remove(dataGridView_TaskLogList.SelectedRows[0]);
+                    //this doesn't fire "UserDeletedRow" event, so call persistence & state updates manually
+                    SaveTimeTrackingDB();
+                    UpdateStateFromData(true);
+                }
+            }
+        }
+
+        private void dataGridView_TaskLogList_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to delete this task entry?", "Really Delete?", MessageBoxButtons.YesNo) != DialogResult.Yes)
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private void dataGridView_TaskLogList_UserDeletedRow(object sender, DataGridViewRowEventArgs e)
+        {
+            SaveTimeTrackingDB();
+            UpdateStateFromData(true);
+        }
+
 
         #endregion
 
@@ -290,35 +390,8 @@ namespace NanoTimeTracker
 
         private void LogWindowCloseWithWarning()
         {
-            if (DismissableWarning("Closing Window", "The Nano TimeTracker log window is closing, but the program will continue to run - you can start and stop tasks, or open the main window, by clicking on the icon in the tray on the bottom right.", "HideCloseWarning"))
+            if (UIUtils.DismissableWarning("Closing Window", "The Nano TimeTracker log window is closing, but the program will continue to run - you can start and stop tasks, or open the main window, by clicking on the icon in the tray on the bottom right.", "HideCloseWarning"))
                 this.Hide();
-        }
-
-        private bool DismissableWarning(string warningTitle, string warningMessage, string settingKey)
-        {
-            bool hideMessage = (bool)Properties.Settings.Default.PropertyValues[settingKey].PropertyValue;
-            if (!hideMessage)
-            {
-                bool permanentlyDismissed;
-                if (Dialogs.DismissableConfirmationWindow.ShowMessage(warningTitle, warningMessage, out permanentlyDismissed) == DialogResult.OK)
-                {
-                    if (permanentlyDismissed)
-                    {
-                        Properties.Settings.Default.PropertyValues[settingKey].PropertyValue = true;
-                        Properties.Settings.Default.Save();
-                    }
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                //if the user has decided to hide the message, we assume consent.
-                return true;
-            }
         }
 
         private void UpdateControlDisplayConsistency()
@@ -344,11 +417,22 @@ namespace NanoTimeTracker
             else if (_taskInProgress && !btn_Stop.Enabled)
                 btn_Stop.Enabled = true;
 
-            //context strips
+            //systray context strip
             if (_taskInProgress && startTaskToolStripMenuItem.Enabled)
                 startTaskToolStripMenuItem.Enabled = false;
             else if (!_taskInProgress && !startTaskToolStripMenuItem.Enabled)
                 startTaskToolStripMenuItem.Enabled = true;
+
+            if (!_taskInProgress && stopEditTaskToolStripMenuItem.Enabled)
+                stopEditTaskToolStripMenuItem.Enabled = false;
+            else if (_taskInProgress && !stopEditTaskToolStripMenuItem.Enabled)
+                stopEditTaskToolStripMenuItem.Enabled = true;
+
+            //datagridview context strip
+            if (_taskInProgress && resumeTaskNowToolStripMenuItem.Enabled)
+                resumeTaskNowToolStripMenuItem.Enabled = false;
+            else if (!_taskInProgress && !resumeTaskNowToolStripMenuItem.Enabled)
+                resumeTaskNowToolStripMenuItem.Enabled = true;
 
             if (!_taskInProgress && stopEditTaskToolStripMenuItem.Enabled)
                 stopEditTaskToolStripMenuItem.Enabled = false;
@@ -370,8 +454,11 @@ namespace NanoTimeTracker
             if (!_taskInProgress && !notifyIcon1.Text.Equals("Nano TimeLogger - no active task"))
                 notifyIcon1.Text = "Nano TimeLogger - no active task";
 
-            //TODO: determine when this actually needs to be set (just initial load??)
-            //WindowHacker.DisableCloseMenu(this);
+            //timer
+            if (_taskInProgress && !timer_StatusUpdate.Enabled)
+                timer_StatusUpdate.Start();
+            else if (!_taskInProgress && timer_StatusUpdate.Enabled)
+                timer_StatusUpdate.Stop();
         }
 
         private void ToggleLogWindowDisplay()
@@ -420,6 +507,8 @@ namespace NanoTimeTracker
                 //only relevant if we're not minimized, but seems to do no harm.
                 this.Activate();
 
+                string promptMessage;
+                string promptTitle;
                 DateTime promptStartDate;
                 DateTime? promptEndDate;
                 string promptDescription;
@@ -429,6 +518,8 @@ namespace NanoTimeTracker
                 if (existingTaskTime != null)
                 {
                     //we are updating a SPECIFIC task
+                    promptMessage = "Please provide updated Task details:";
+                    promptTitle = "Update Task";
                     promptStartDate = existingTaskTime.Value;
                     if (!GetTaskDetailsByTask(existingTaskTime.Value, out promptEndDate, out promptDescription, out promptCategory, out promptTimeBillable))
                     {
@@ -445,11 +536,15 @@ namespace NanoTimeTracker
 
                     if (!_taskInProgress)
                     {
+                        promptMessage = "New task details:";
+                        promptTitle = "Task Entry - New Task";
                         promptStartDate = DateTime.Now;
                         promptEndDate = null;
                     }
                     else
                     {
+                        promptMessage = "Task details:";
+                        promptTitle = "Task Entry - Confirm Task Details / End Task";
                         promptStartDate = _taskInProgressStartTime;
                         promptEndDate = DateTime.Now;
                     }
@@ -463,7 +558,7 @@ namespace NanoTimeTracker
 
                 if (doAction == null)
                 {
-                    TaskDialog.SetPrompt(promptStartDate, promptEndDate, promptDescription, promptCategory, promptTimeBillable);
+                    TaskDialog.SetPrompt(promptMessage, promptTitle, promptStartDate, promptEndDate, promptDescription, promptCategory, promptTimeBillable, true);
                     if (TaskDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                     {
                         providedStartDate = TaskDialog.TaskStartDate.Value; //TODO: add validation to ensure this never fails
@@ -481,62 +576,29 @@ namespace NanoTimeTracker
                 {
                     if (existingTaskTime != null)
                     {
-                        if (_taskInProgressStartTime.Equals(promptStartDate))
-                        {
-                            //we're updating the in-progress task;
-                            _taskInProgressStartTime = providedStartDate;
-                            _taskInProgressDescription = providedDescription;
-                            _taskInProgressCategory = providedCategory;
-                            _taskInProgressTimeBillable = providedTimeBillable;
-
-                            if (_taskInProgress && providedEndDate != null)
-                                _taskInProgress = false;
-                        }
-
+                        //update the SPECIFIC entry that was passed in
                         UpdateLogTask(existingTaskTime.Value, providedStartDate, providedEndDate, providedDescription, providedCategory, providedTimeBillable);
                     }
                     else
                     {
-                        _taskInProgressStartTime = providedStartDate;
-                        _taskInProgressDescription = providedDescription;
-                        _taskInProgressCategory = providedCategory;
-                        _taskInProgressTimeBillable = providedTimeBillable;
-
                         //update log if already running but we're not completing
                         if (_taskInProgress && providedEndDate == null)
-                            UpdateLogOpenTask(_taskInProgressStartTime, providedEndDate, _taskInProgressDescription, _taskInProgressCategory, _taskInProgressTimeBillable);
+                            UpdateLogOpenTask(providedStartDate, providedEndDate, providedDescription, providedCategory, providedTimeBillable);
 
                         //start log if not already in-progress
                         if (!_taskInProgress)
                         {
-                            _taskInProgress = true;
-                            StartLoggingTask(_taskInProgressStartTime, _taskInProgressDescription, _taskInProgressCategory, _taskInProgressTimeBillable);
+                            StartLoggingTask(providedStartDate, providedDescription, providedCategory, providedTimeBillable);
                         }
 
                         //end log if end date provided
                         if (providedEndDate != null)
                         {
-                            _taskInProgress = false;
-                            EndLoggingOpenTask(_taskInProgressStartTime, providedEndDate.Value, _taskInProgressDescription, _taskInProgressCategory, _taskInProgressTimeBillable);
+                            EndLoggingOpenTask(providedStartDate, providedEndDate.Value, providedDescription, providedCategory, providedTimeBillable);
                         }
                     }
 
-                    //retrieve existing totals for display
-                    CheckHourTotals();
-
-                    //UI updates specific to task running change
-                    UpdateControlDisplayConsistency();
-                    if (_taskInProgress)
-                    {
-                        timer_StatusUpdate.Start();
-                        btn_Stop.Focus();
-                    }
-                    else
-                    {
-                        timer_StatusUpdate.Stop();
-                        UpdateStatusDisplay();
-                        btn_Start.Focus();
-                    }
+                    UpdateStateFromData(true);
                 }
 
                 //release dialog "lock" and update display
@@ -591,27 +653,40 @@ namespace NanoTimeTracker
             if (System.IO.File.Exists(_currentLogFileName + ".xml"))
                 dataSet1.ReadXml(_currentLogFileName + ".xml");
 
-            //Recover running state if required...
-            DataRow[] recentrows = dataSet1.DataTable1.Select("StartDateTime Is Not Null", "StartDateTime Desc");
-            if (recentrows.Length > 0)
-            {
-                DataRow lastRow = recentrows[0];
-                if (lastRow["EndDateTime"] == DBNull.Value)
-                {
-                    //set running state in app
-                    _taskInProgressStartTime = (DateTime)lastRow["StartDateTime"];
-                    _taskInProgress = true;
-                    if (lastRow["TaskName"] != DBNull.Value)
-                        _taskInProgressDescription = (string)lastRow["TaskName"];
-                    _taskInProgressTimeBillable = (bool)lastRow["BillableFlag"];
+            UpdateStateFromData(true);
+        }
 
-                    //display timer...
-                    lbl_WorkingTimeValue.Text = "Recovering to Running...";
-                    timer_StatusUpdate.Start();
-                }
+        private void UpdateStateFromData(bool allowReFocus)
+        {
+            //Detect running state 
+            DataRow[] recentOpenTasks = dataSet1.DataTable1.Select("StartDateTime Is Not Null And EndDateTime Is Null", "StartDateTime Desc");
+            if (recentOpenTasks.Length > 0)
+            {
+                DataRow mostRecentOpenTask = recentOpenTasks[0];
+                _taskInProgress = true;
+                _taskInProgressStartTime = (DateTime)mostRecentOpenTask["StartDateTime"];
+                _taskInProgressDescription = (string)mostRecentOpenTask["TaskName"];
+                _taskInProgressCategory = (string)mostRecentOpenTask["TaskCategory"];
+                _taskInProgressTimeBillable = (bool)mostRecentOpenTask["BillableFlag"];
+            }
+            else
+            {
+                _taskInProgress = false;
             }
 
+            //retrieve existing totals for display
             CheckHourTotals();
+
+            //UI updates specific to task running change
+            UpdateControlDisplayConsistency();
+            if (allowReFocus)
+            {
+                if (_taskInProgress)
+                    btn_Stop.Focus();
+                else
+                    btn_Start.Focus();
+            }
+            UpdateStatusDisplay();
         }
 
         private void StartLoggingTask(DateTime taskStartTime, string taskDescription, string taskCategory, bool taskTimeBillable)
