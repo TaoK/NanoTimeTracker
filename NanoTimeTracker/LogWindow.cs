@@ -878,16 +878,23 @@ namespace NanoTimeTracker
             if (!string.IsNullOrEmpty(_currentLogFileName))
             {
                 //Write the dataset
-                dataSet1.WriteXml(_currentLogFileName + ".xml");
+                SaveDataSetSafe(dataSet1, _currentLogFileName + ".xml");
 
                 //if the day has ended, clear/start anew
                 if (!_currentLogFileName.Equals(DeriveLogFileName()) && AllowDateSwitch)
                 {
                     dataSet1.DataTable1.Rows.Clear();
                     _currentLogFileName = DeriveLogFileName();
-                    dataSet1.WriteXml(_currentLogFileName + ".xml");
+                    SaveDataSetSafe(dataSet1, _currentLogFileName + ".xml");
                 }
             }
+        }
+
+        private static void SaveDataSetSafe(DataSet targetDataSet, string targetFilePath)
+        {
+            targetDataSet.WriteXml(targetFilePath + ".tmp");
+            System.IO.File.Copy(targetFilePath + ".tmp", targetFilePath, true);
+            System.IO.File.Delete(targetFilePath + ".tmp");
         }
 
         private void CheckHourTotals()
