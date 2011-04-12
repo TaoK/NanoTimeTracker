@@ -28,6 +28,14 @@ namespace NanoTimeTracker.FrameworkClassReplacements
     {
         //code inspired by "Tergiver"'s answer to a question about DGV context menu placement on key context:
         // http://social.msdn.microsoft.com/Forums/en-US/winforms/thread/ef369cf3-58e9-4997-acc3-87a51d83011c
+        //
+        //also includes double-buffering fix for NVidia nastiness, found on stack overflow:
+        // http://stackoverflow.com/questions/118528/horrible-redraw-performance-of-the-datagridview-on-one-of-my-two-screens
+
+        public DataGridViewWithRowContextMenu()
+        {
+            DoubleBuffered = true;
+        }
 
         [Browsable(true)]
         [Category("Behavior")]
