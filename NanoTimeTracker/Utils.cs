@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Data;
 
 namespace NanoTimeTracker
 {
@@ -37,9 +38,28 @@ namespace NanoTimeTracker
                 );
         }
 
+        public static TimeSpan DecimalHoursToTimeSpan(double hours)
+        {
+            //accuracy to seconds only...
+            return new TimeSpan((int)Math.Floor(hours), (int)Math.Floor((hours * 60) % 60), (int)Math.Floor((hours * 60 * 60) % 60));
+        }
+
+        public static string FormatDateFullTimeStamp(DateTime inputDate)
+        {
+            return inputDate.ToString("yyyy-MM-dd HH:mm:ss.fffffff");
+        }
+
         public static string FormatTimeSpan(TimeSpan timeSpan)
         {
             return String.Format("{0:00}", Math.Floor(timeSpan.TotalHours)) + ":" + String.Format("{0:00}", timeSpan.Minutes) + ":" + String.Format("{0:00}", timeSpan.Seconds);
         }
+
+        public static void SaveDataSetSafe(DataSet targetDataSet, string targetFilePath)
+        {
+            targetDataSet.WriteXml(targetFilePath + ".tmp");
+            System.IO.File.Copy(targetFilePath + ".tmp", targetFilePath, true);
+            System.IO.File.Delete(targetFilePath + ".tmp");
+        }
+
     }
 }

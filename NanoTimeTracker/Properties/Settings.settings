@@ -8,7 +8,7 @@
     <Setting Name="HideCloseWarning" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="upgraded" Type="System.Boolean" Scope="User">
+    <Setting Name="UpgradeCompleted" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="HideExitWarning" Type="System.Boolean" Scope="User">

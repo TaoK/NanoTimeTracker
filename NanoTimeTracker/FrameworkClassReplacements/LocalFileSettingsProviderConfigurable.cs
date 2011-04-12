@@ -73,12 +73,20 @@ namespace NanoTimeTracker.FrameworkClassReplacements
         }
 
         private const string SETTINGS_FILENAME = "UserSettings.xml";
-        private static string AssemblyLocalFilePath
+        private static string AssemblyLocalRootPath
         {
             get
             {
                 FileInfo assemblyLocation = new FileInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                return Path.Combine(assemblyLocation.DirectoryName, assemblyLocation.Name.Substring(0, assemblyLocation.Name.Length - assemblyLocation.Extension.Length + 1) + SETTINGS_FILENAME);
+                return Path.Combine(assemblyLocation.DirectoryName, assemblyLocation.Name.Substring(0, assemblyLocation.Name.Length - assemblyLocation.Extension.Length + 1));
+            }
+        }
+
+        private static string AssemblyLocalSettingsFilePath
+        {
+            get
+            {
+                return AssemblyLocalRootPath + SETTINGS_FILENAME;
             }
         }
 
@@ -86,21 +94,26 @@ namespace NanoTimeTracker.FrameworkClassReplacements
         {
             get
             {
-                if (File.Exists(AssemblyLocalFilePath))
+                if (File.Exists(AssemblyLocalSettingsFilePath))
                     return false;
                 else
                     return true;
             }
         }
 
+        public static string GetDataFilePath(string targetFileName)
+        {
+            if (SettingsFileIsVersioned)
+                return Path.Combine(System.Windows.Forms.Application.UserAppDataPath, targetFileName);
+            else
+                return AssemblyLocalRootPath + targetFileName;
+        }
+
         private static string CurrentSettingsFilePath
         {
             get
             {
-                if (SettingsFileIsVersioned)
-                    return Path.Combine(System.Windows.Forms.Application.UserAppDataPath, SETTINGS_FILENAME);
-                else
-                    return AssemblyLocalFilePath;
+                return GetDataFilePath(SETTINGS_FILENAME);
             }
         }
 
@@ -280,8 +293,8 @@ namespace NanoTimeTracker.FrameworkClassReplacements
 
         public static void MoveToAssemblyLocalStorage()
         {
-            if (!CurrentSettingsFilePath.Equals(AssemblyLocalFilePath) && File.Exists(CurrentSettingsFilePath))
-                File.Copy(CurrentSettingsFilePath, AssemblyLocalFilePath);
+            if (!CurrentSettingsFilePath.Equals(AssemblyLocalSettingsFilePath) && File.Exists(CurrentSettingsFilePath))
+                File.Copy(CurrentSettingsFilePath, AssemblyLocalSettingsFilePath);
             //TODO: handle any other files, besides settings files
         }
 

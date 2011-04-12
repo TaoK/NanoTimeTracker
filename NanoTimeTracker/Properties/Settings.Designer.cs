@@ -50,12 +50,12 @@ namespace NanoTimeTracker.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool upgraded {
+        public bool UpgradeCompleted {
             get {
-                return ((bool)(this["upgraded"]));
+                return ((bool)(this["UpgradeCompleted"]));
             }
             set {
-                this["upgraded"] = value;
+                this["UpgradeCompleted"] = value;
             }
         }
         
