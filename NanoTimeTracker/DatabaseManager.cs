@@ -57,7 +57,6 @@ namespace NanoTimeTracker
             logTable.Columns["TimeTaken"].AllowDBNull = true;
 
             logTable.Constraints.Add("PK_StartDateTime", logTable.Columns["StartDateTime"], true);
-
         }
 
         public BindingSource GetBindingSource()
@@ -65,6 +64,7 @@ namespace NanoTimeTracker
             BindingSource newBindingSource = new BindingSource();
             newBindingSource.DataSource = dataSet;
             newBindingSource.DataMember = "DataTable1";
+            newBindingSource.Sort = "StartDateTime ASC";
             return newBindingSource;
         }
 
@@ -108,11 +108,6 @@ namespace NanoTimeTracker
             logTable.Rows.Add(newRow);
             SaveTimeTrackingDB();
 
-        }
-
-        public void EndLoggingOpenTask(DateTime taskStartTime, DateTime taskEndDate, string taskDescription, string taskCategory, bool taskTimeBillable)
-        {
-            UpdateLogOpenTask(taskStartTime, taskEndDate, taskDescription, taskCategory, taskTimeBillable);
         }
 
         public void UpdateLogOpenTask(DateTime taskStartTime, DateTime? taskEndDate, string taskDescription, string taskCategory, bool taskTimeBillable)
@@ -222,14 +217,11 @@ namespace NanoTimeTracker
             //TODO: Add auto-exporting here.
         }
 
-        public double GetPreviousHoursTotalsToday()
+        public double GetHoursTotals(DateTime fromDate, DateTime toDate, bool billableOnly)
         {
-            return GetComputedDouble("Sum(TimeTaken)", string.Format("StartDateTime >= #{0}#", Utils.FormatDateFullTimeStamp(DateTime.Today)));
-        }
-
-        public double GetPreviousBillableHoursTotalsToday()
-        {
-            return GetComputedDouble("Sum(TimeTaken)", string.Format("BillableFlag = True And StartDateTime >= #{0}#", Utils.FormatDateFullTimeStamp(DateTime.Today)));
+            string filterString = string.Format("StartDateTime >= #{0}# And StartDateTime < #{1}#", Utils.FormatDateFullTimeStamp(fromDate.Date), Utils.FormatDateFullTimeStamp(toDate.Date.AddDays(1)));
+            if (billableOnly) filterString += " And BillableFlag = True";
+            return GetComputedDouble("Sum(TimeTaken)", filterString);
         }
 
         private double GetComputedDouble(string expression, string filter)

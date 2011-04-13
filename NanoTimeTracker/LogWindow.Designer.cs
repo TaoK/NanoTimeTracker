@@ -86,13 +86,20 @@ namespace NanoTimeTracker
             this.lbl_BillableTodayLabel = new System.Windows.Forms.Label();
             this.lbl_TimeTodayLabel = new System.Windows.Forms.Label();
             this.grp_Status = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.dateNavigator_LogFilter = new NanoTimeTracker.DateNavigator();
             this.lbl_CategoryValue = new System.Windows.Forms.Label();
             this.lbl_CurrentTaskValue = new System.Windows.Forms.Label();
-            this.lbl_CategoryLabel = new System.Windows.Forms.Label();
             this.lbl_CurrentTaskLabel = new System.Windows.Forms.Label();
-            this.datePicker_FilterDate = new System.Windows.Forms.DateTimePicker();
-            this.btn_DatePrev = new System.Windows.Forms.Button();
-            this.btn_DateNext = new System.Windows.Forms.Button();
+            this.lbl_CategoryLabel = new System.Windows.Forms.Label();
+            this.lbl_TotalThatDay = new System.Windows.Forms.Label();
+            this.lbl_BillableThatDay = new System.Windows.Forms.Label();
+            this.lbl_TotalThatDayValue = new System.Windows.Forms.Label();
+            this.lbl_BillableThatDayValue = new System.Windows.Forms.Label();
+            this.lbl_BillableTimeThisWeek = new System.Windows.Forms.Label();
+            this.lbl_BillableThisMonth = new System.Windows.Forms.Label();
+            this.lbl_BillableThisWeekValue = new System.Windows.Forms.Label();
+            this.lbl_BillableThisMonthValue = new System.Windows.Forms.Label();
             this.dataGridView_TaskLogList = new NanoTimeTracker.FrameworkClassReplacements.DataGridViewWithRowContextMenu();
             this.StartDateTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EndDateTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -100,17 +107,26 @@ namespace NanoTimeTracker
             this.TaskName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Billable = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.TimeTaken = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.grp_DateNavigation = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.grp_Stats = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.contextMenuStrip_SysTrayContext.SuspendLayout();
             this.contextMenuStrip_DataGrid.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.grp_Status.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_TaskLogList)).BeginInit();
+            this.grp_DateNavigation.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            this.grp_Stats.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // btn_Start
             // 
             this.btn_Start.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btn_Start.Location = new System.Drawing.Point(12, 290);
+            this.btn_Start.Location = new System.Drawing.Point(12, 299);
             this.btn_Start.Name = "btn_Start";
             this.btn_Start.Size = new System.Drawing.Size(106, 37);
             this.btn_Start.TabIndex = 0;
@@ -120,7 +136,7 @@ namespace NanoTimeTracker
             // btn_Stop
             // 
             this.btn_Stop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btn_Stop.Location = new System.Drawing.Point(12, 332);
+            this.btn_Stop.Location = new System.Drawing.Point(12, 341);
             this.btn_Stop.Name = "btn_Stop";
             this.btn_Stop.Size = new System.Drawing.Size(106, 37);
             this.btn_Stop.TabIndex = 1;
@@ -135,7 +151,7 @@ namespace NanoTimeTracker
             // lbl_WorkingTimeValue
             // 
             this.lbl_WorkingTimeValue.AutoSize = true;
-            this.lbl_WorkingTimeValue.Location = new System.Drawing.Point(112, 23);
+            this.lbl_WorkingTimeValue.Location = new System.Drawing.Point(103, 0);
             this.lbl_WorkingTimeValue.Name = "lbl_WorkingTimeValue";
             this.lbl_WorkingTimeValue.Size = new System.Drawing.Size(49, 13);
             this.lbl_WorkingTimeValue.TabIndex = 3;
@@ -158,34 +174,34 @@ namespace NanoTimeTracker
             this.stopEditTaskToolStripMenuItem,
             this.exitToolStripMenuItem1});
             this.contextMenuStrip_SysTrayContext.Name = "contextMenuStrip_SysTrayContext";
-            this.contextMenuStrip_SysTrayContext.Size = new System.Drawing.Size(183, 92);
+            this.contextMenuStrip_SysTrayContext.Size = new System.Drawing.Size(217, 92);
             // 
             // openLogWindowToolStripMenuItem
             // 
             this.openLogWindowToolStripMenuItem.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.openLogWindowToolStripMenuItem.Name = "openLogWindowToolStripMenuItem";
-            this.openLogWindowToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.openLogWindowToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
             this.openLogWindowToolStripMenuItem.Text = "Open Log Window...";
             this.openLogWindowToolStripMenuItem.Click += new System.EventHandler(this.openLogWindowToolStripMenuItem_Click);
             // 
             // startTaskToolStripMenuItem
             // 
             this.startTaskToolStripMenuItem.Name = "startTaskToolStripMenuItem";
-            this.startTaskToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.startTaskToolStripMenuItem.Text = "Start/Add Task...";
+            this.startTaskToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.startTaskToolStripMenuItem.Text = "Start/Add Logging Entry...";
             this.startTaskToolStripMenuItem.Click += new System.EventHandler(this.startTaskToolStripMenuItem_Click);
             // 
             // stopEditTaskToolStripMenuItem
             // 
             this.stopEditTaskToolStripMenuItem.Name = "stopEditTaskToolStripMenuItem";
-            this.stopEditTaskToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.stopEditTaskToolStripMenuItem.Text = "Stop/Update Task...";
+            this.stopEditTaskToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.stopEditTaskToolStripMenuItem.Text = "Stop/Update Logging Entry...";
             this.stopEditTaskToolStripMenuItem.Click += new System.EventHandler(this.stopEditTaskToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem1
             // 
             this.exitToolStripMenuItem1.Name = "exitToolStripMenuItem1";
-            this.exitToolStripMenuItem1.Size = new System.Drawing.Size(182, 22);
+            this.exitToolStripMenuItem1.Size = new System.Drawing.Size(216, 22);
             this.exitToolStripMenuItem1.Text = "Exit";
             this.exitToolStripMenuItem1.Click += new System.EventHandler(this.exitToolStripMenuItem1_Click);
             // 
@@ -209,7 +225,7 @@ namespace NanoTimeTracker
             this.updateTaskToolStripMenuItem.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.updateTaskToolStripMenuItem.Name = "updateTaskToolStripMenuItem";
             this.updateTaskToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
-            this.updateTaskToolStripMenuItem.Text = "Update Task...";
+            this.updateTaskToolStripMenuItem.Text = "Update Entry...";
             this.updateTaskToolStripMenuItem.Click += new System.EventHandler(this.updateTaskToolStripMenuItem_Click);
             // 
             // resumeTaskNowToolStripMenuItem
@@ -223,20 +239,20 @@ namespace NanoTimeTracker
             // 
             this.splitTaskToolStripMenuItem.Name = "splitTaskToolStripMenuItem";
             this.splitTaskToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
-            this.splitTaskToolStripMenuItem.Text = "Split Task...";
+            this.splitTaskToolStripMenuItem.Text = "Split Entry...";
             this.splitTaskToolStripMenuItem.Click += new System.EventHandler(this.splitTaskToolStripMenuItem_Click);
             // 
             // deleteTaskToolStripMenuItem
             // 
             this.deleteTaskToolStripMenuItem.Name = "deleteTaskToolStripMenuItem";
             this.deleteTaskToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
-            this.deleteTaskToolStripMenuItem.Text = "Delete Task...";
+            this.deleteTaskToolStripMenuItem.Text = "Delete Entry...";
             this.deleteTaskToolStripMenuItem.Click += new System.EventHandler(this.deleteTaskToolStripMenuItem_Click);
             // 
             // lbl_TimeTodayValue
             // 
             this.lbl_TimeTodayValue.AutoSize = true;
-            this.lbl_TimeTodayValue.Location = new System.Drawing.Point(112, 46);
+            this.lbl_TimeTodayValue.Location = new System.Drawing.Point(118, 0);
             this.lbl_TimeTodayValue.Name = "lbl_TimeTodayValue";
             this.lbl_TimeTodayValue.Size = new System.Drawing.Size(49, 13);
             this.lbl_TimeTodayValue.TabIndex = 7;
@@ -245,7 +261,7 @@ namespace NanoTimeTracker
             // lbl_BillableTimeTodayValue
             // 
             this.lbl_BillableTimeTodayValue.AutoSize = true;
-            this.lbl_BillableTimeTodayValue.Location = new System.Drawing.Point(112, 69);
+            this.lbl_BillableTimeTodayValue.Location = new System.Drawing.Point(118, 20);
             this.lbl_BillableTimeTodayValue.Name = "lbl_BillableTimeTodayValue";
             this.lbl_BillableTimeTodayValue.Size = new System.Drawing.Size(49, 13);
             this.lbl_BillableTimeTodayValue.TabIndex = 8;
@@ -259,7 +275,7 @@ namespace NanoTimeTracker
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(805, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(788, 24);
             this.menuStrip1.TabIndex = 9;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -276,14 +292,14 @@ namespace NanoTimeTracker
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
             this.closeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -299,14 +315,14 @@ namespace NanoTimeTracker
             // deleteLogToolStripMenuItem
             // 
             this.deleteLogToolStripMenuItem.Name = "deleteLogToolStripMenuItem";
-            this.deleteLogToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.deleteLogToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.deleteLogToolStripMenuItem.Text = "Delete Log...";
             this.deleteLogToolStripMenuItem.Click += new System.EventHandler(this.deleteLogToolStripMenuItem_Click);
             // 
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.optionsToolStripMenuItem.Text = "Options...";
             // 
             // helpToolStripMenuItem
@@ -321,30 +337,30 @@ namespace NanoTimeTracker
             // onlineHelpToolStripMenuItem
             // 
             this.onlineHelpToolStripMenuItem.Name = "onlineHelpToolStripMenuItem";
-            this.onlineHelpToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.onlineHelpToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.onlineHelpToolStripMenuItem.Text = "Online Help";
             this.onlineHelpToolStripMenuItem.Click += new System.EventHandler(this.onlineHelpToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboutToolStripMenuItem.Text = "About...";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // lbl_WorkingTimeLabel
             // 
             this.lbl_WorkingTimeLabel.AutoSize = true;
-            this.lbl_WorkingTimeLabel.Location = new System.Drawing.Point(6, 23);
+            this.lbl_WorkingTimeLabel.Location = new System.Drawing.Point(3, 0);
             this.lbl_WorkingTimeLabel.Name = "lbl_WorkingTimeLabel";
-            this.lbl_WorkingTimeLabel.Size = new System.Drawing.Size(60, 13);
+            this.lbl_WorkingTimeLabel.Size = new System.Drawing.Size(83, 13);
             this.lbl_WorkingTimeLabel.TabIndex = 10;
-            this.lbl_WorkingTimeLabel.Text = "Task Time:";
+            this.lbl_WorkingTimeLabel.Text = "This Entry Time:";
             // 
             // lbl_BillableTodayLabel
             // 
             this.lbl_BillableTodayLabel.AutoSize = true;
-            this.lbl_BillableTodayLabel.Location = new System.Drawing.Point(6, 69);
+            this.lbl_BillableTodayLabel.Location = new System.Drawing.Point(3, 20);
             this.lbl_BillableTodayLabel.Name = "lbl_BillableTodayLabel";
             this.lbl_BillableTodayLabel.Size = new System.Drawing.Size(102, 13);
             this.lbl_BillableTodayLabel.TabIndex = 12;
@@ -353,98 +369,165 @@ namespace NanoTimeTracker
             // lbl_TimeTodayLabel
             // 
             this.lbl_TimeTodayLabel.AutoSize = true;
-            this.lbl_TimeTodayLabel.Location = new System.Drawing.Point(6, 46);
+            this.lbl_TimeTodayLabel.Location = new System.Drawing.Point(3, 0);
             this.lbl_TimeTodayLabel.Name = "lbl_TimeTodayLabel";
-            this.lbl_TimeTodayLabel.Size = new System.Drawing.Size(66, 13);
+            this.lbl_TimeTodayLabel.Size = new System.Drawing.Size(93, 13);
             this.lbl_TimeTodayLabel.TabIndex = 11;
-            this.lbl_TimeTodayLabel.Text = "Time Today:";
+            this.lbl_TimeTodayLabel.Text = "Total Time Today:";
             // 
             // grp_Status
             // 
             this.grp_Status.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.grp_Status.Controls.Add(this.lbl_CategoryValue);
-            this.grp_Status.Controls.Add(this.lbl_CurrentTaskValue);
-            this.grp_Status.Controls.Add(this.lbl_CategoryLabel);
-            this.grp_Status.Controls.Add(this.lbl_CurrentTaskLabel);
-            this.grp_Status.Controls.Add(this.lbl_BillableTodayLabel);
-            this.grp_Status.Controls.Add(this.lbl_WorkingTimeLabel);
-            this.grp_Status.Controls.Add(this.lbl_BillableTimeTodayValue);
-            this.grp_Status.Controls.Add(this.lbl_WorkingTimeValue);
-            this.grp_Status.Controls.Add(this.lbl_TimeTodayLabel);
-            this.grp_Status.Controls.Add(this.lbl_TimeTodayValue);
-            this.grp_Status.Location = new System.Drawing.Point(133, 279);
+            this.grp_Status.Controls.Add(this.tableLayoutPanel1);
+            this.grp_Status.Location = new System.Drawing.Point(133, 288);
             this.grp_Status.Name = "grp_Status";
-            this.grp_Status.Size = new System.Drawing.Size(515, 100);
+            this.grp_Status.Size = new System.Drawing.Size(258, 100);
             this.grp_Status.TabIndex = 12;
             this.grp_Status.TabStop = false;
             this.grp_Status.Text = "Status";
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Controls.Add(this.lbl_CategoryValue, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.lbl_CurrentTaskValue, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.lbl_CurrentTaskLabel, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.lbl_CategoryLabel, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.lbl_WorkingTimeValue, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.lbl_WorkingTimeLabel, 0, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(252, 81);
+            this.tableLayoutPanel1.TabIndex = 17;
+            // 
+            // dateNavigator_LogFilter
+            // 
+            this.tableLayoutPanel2.SetColumnSpan(this.dateNavigator_LogFilter, 2);
+            this.dateNavigator_LogFilter.DateValue = new System.DateTime(2011, 4, 13, 0, 0, 0, 0);
+            this.dateNavigator_LogFilter.Location = new System.Drawing.Point(3, 3);
+            this.dateNavigator_LogFilter.MaxDate = new System.DateTime(9998, 12, 31, 0, 0, 0, 0);
+            this.dateNavigator_LogFilter.MinDate = new System.DateTime(1753, 1, 1, 0, 0, 0, 0);
+            this.dateNavigator_LogFilter.Name = "dateNavigator_LogFilter";
+            this.dateNavigator_LogFilter.Size = new System.Drawing.Size(169, 27);
+            this.dateNavigator_LogFilter.TabIndex = 16;
+            this.dateNavigator_LogFilter.DateValueChanged += new NanoTimeTracker.DateNavigator.DateValueChangeHandler(this.dateNavigator1_DateValueChanged);
             // 
             // lbl_CategoryValue
             // 
             this.lbl_CategoryValue.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.lbl_CategoryValue.Location = new System.Drawing.Point(289, 46);
+            this.lbl_CategoryValue.Location = new System.Drawing.Point(103, 40);
             this.lbl_CategoryValue.Name = "lbl_CategoryValue";
-            this.lbl_CategoryValue.Size = new System.Drawing.Size(220, 23);
+            this.lbl_CategoryValue.Size = new System.Drawing.Size(146, 20);
             this.lbl_CategoryValue.TabIndex = 16;
             // 
             // lbl_CurrentTaskValue
             // 
             this.lbl_CurrentTaskValue.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.lbl_CurrentTaskValue.Location = new System.Drawing.Point(289, 23);
+            this.lbl_CurrentTaskValue.Location = new System.Drawing.Point(103, 20);
             this.lbl_CurrentTaskValue.Name = "lbl_CurrentTaskValue";
-            this.lbl_CurrentTaskValue.Size = new System.Drawing.Size(220, 23);
+            this.lbl_CurrentTaskValue.Size = new System.Drawing.Size(146, 20);
             this.lbl_CurrentTaskValue.TabIndex = 15;
-            // 
-            // lbl_CategoryLabel
-            // 
-            this.lbl_CategoryLabel.AutoSize = true;
-            this.lbl_CategoryLabel.Location = new System.Drawing.Point(209, 46);
-            this.lbl_CategoryLabel.Name = "lbl_CategoryLabel";
-            this.lbl_CategoryLabel.Size = new System.Drawing.Size(52, 13);
-            this.lbl_CategoryLabel.TabIndex = 14;
-            this.lbl_CategoryLabel.Text = "Category:";
             // 
             // lbl_CurrentTaskLabel
             // 
             this.lbl_CurrentTaskLabel.AutoSize = true;
-            this.lbl_CurrentTaskLabel.Location = new System.Drawing.Point(209, 23);
+            this.lbl_CurrentTaskLabel.Location = new System.Drawing.Point(3, 20);
             this.lbl_CurrentTaskLabel.Name = "lbl_CurrentTaskLabel";
             this.lbl_CurrentTaskLabel.Size = new System.Drawing.Size(74, 13);
             this.lbl_CurrentTaskLabel.TabIndex = 13;
             this.lbl_CurrentTaskLabel.Text = "Current Task: ";
             // 
-            // datePicker_FilterDate
+            // lbl_CategoryLabel
             // 
-            this.datePicker_FilterDate.CustomFormat = "yyyy-MM-dd";
-            this.datePicker_FilterDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.datePicker_FilterDate.Location = new System.Drawing.Point(680, 279);
-            this.datePicker_FilterDate.Name = "datePicker_FilterDate";
-            this.datePicker_FilterDate.Size = new System.Drawing.Size(79, 20);
-            this.datePicker_FilterDate.TabIndex = 13;
-            this.datePicker_FilterDate.ValueChanged += new System.EventHandler(this.datePicker_FilterDate_ValueChanged);
+            this.lbl_CategoryLabel.AutoSize = true;
+            this.lbl_CategoryLabel.Location = new System.Drawing.Point(3, 40);
+            this.lbl_CategoryLabel.Name = "lbl_CategoryLabel";
+            this.lbl_CategoryLabel.Size = new System.Drawing.Size(52, 13);
+            this.lbl_CategoryLabel.TabIndex = 14;
+            this.lbl_CategoryLabel.Text = "Category:";
             // 
-            // btn_DatePrev
+            // lbl_TotalThatDay
             // 
-            this.btn_DatePrev.Location = new System.Drawing.Point(656, 279);
-            this.btn_DatePrev.Name = "btn_DatePrev";
-            this.btn_DatePrev.Size = new System.Drawing.Size(18, 20);
-            this.btn_DatePrev.TabIndex = 14;
-            this.btn_DatePrev.Text = "<";
-            this.btn_DatePrev.UseVisualStyleBackColor = true;
-            this.btn_DatePrev.Click += new System.EventHandler(this.btn_DatePrev_Click);
+            this.lbl_TotalThatDay.AutoSize = true;
+            this.lbl_TotalThatDay.Location = new System.Drawing.Point(3, 41);
+            this.lbl_TotalThatDay.Name = "lbl_TotalThatDay";
+            this.lbl_TotalThatDay.Size = new System.Drawing.Size(34, 13);
+            this.lbl_TotalThatDay.TabIndex = 17;
+            this.lbl_TotalThatDay.Text = "Total:";
             // 
-            // btn_DateNext
+            // lbl_BillableThatDay
             // 
-            this.btn_DateNext.Location = new System.Drawing.Point(765, 279);
-            this.btn_DateNext.Name = "btn_DateNext";
-            this.btn_DateNext.Size = new System.Drawing.Size(18, 20);
-            this.btn_DateNext.TabIndex = 15;
-            this.btn_DateNext.Text = ">";
-            this.btn_DateNext.UseVisualStyleBackColor = true;
-            this.btn_DateNext.Click += new System.EventHandler(this.btn_DateNext_Click);
+            this.lbl_BillableThatDay.AutoSize = true;
+            this.lbl_BillableThatDay.Location = new System.Drawing.Point(3, 61);
+            this.lbl_BillableThatDay.Name = "lbl_BillableThatDay";
+            this.lbl_BillableThatDay.Size = new System.Drawing.Size(43, 13);
+            this.lbl_BillableThatDay.TabIndex = 18;
+            this.lbl_BillableThatDay.Text = "Billable:";
+            // 
+            // lbl_TotalThatDayValue
+            // 
+            this.lbl_TotalThatDayValue.AutoSize = true;
+            this.lbl_TotalThatDayValue.Location = new System.Drawing.Point(91, 41);
+            this.lbl_TotalThatDayValue.Name = "lbl_TotalThatDayValue";
+            this.lbl_TotalThatDayValue.Size = new System.Drawing.Size(49, 13);
+            this.lbl_TotalThatDayValue.TabIndex = 7;
+            this.lbl_TotalThatDayValue.Text = "00:00:00";
+            // 
+            // lbl_BillableThatDayValue
+            // 
+            this.lbl_BillableThatDayValue.AutoSize = true;
+            this.lbl_BillableThatDayValue.Location = new System.Drawing.Point(91, 61);
+            this.lbl_BillableThatDayValue.Name = "lbl_BillableThatDayValue";
+            this.lbl_BillableThatDayValue.Size = new System.Drawing.Size(49, 13);
+            this.lbl_BillableThatDayValue.TabIndex = 8;
+            this.lbl_BillableThatDayValue.Text = "00:00:00";
+            // 
+            // lbl_BillableTimeThisWeek
+            // 
+            this.lbl_BillableTimeThisWeek.AutoSize = true;
+            this.lbl_BillableTimeThisWeek.Location = new System.Drawing.Point(3, 40);
+            this.lbl_BillableTimeThisWeek.Name = "lbl_BillableTimeThisWeek";
+            this.lbl_BillableTimeThisWeek.Size = new System.Drawing.Size(98, 13);
+            this.lbl_BillableTimeThisWeek.TabIndex = 19;
+            this.lbl_BillableTimeThisWeek.Text = "Billable This Week:";
+            // 
+            // lbl_BillableThisMonth
+            // 
+            this.lbl_BillableThisMonth.AutoSize = true;
+            this.lbl_BillableThisMonth.Location = new System.Drawing.Point(3, 60);
+            this.lbl_BillableThisMonth.Name = "lbl_BillableThisMonth";
+            this.lbl_BillableThisMonth.Size = new System.Drawing.Size(99, 13);
+            this.lbl_BillableThisMonth.TabIndex = 20;
+            this.lbl_BillableThisMonth.Text = "Billable This Month:";
+            // 
+            // lbl_BillableThisWeekValue
+            // 
+            this.lbl_BillableThisWeekValue.AutoSize = true;
+            this.lbl_BillableThisWeekValue.Location = new System.Drawing.Point(118, 40);
+            this.lbl_BillableThisWeekValue.Name = "lbl_BillableThisWeekValue";
+            this.lbl_BillableThisWeekValue.Size = new System.Drawing.Size(49, 13);
+            this.lbl_BillableThisWeekValue.TabIndex = 8;
+            this.lbl_BillableThisWeekValue.Text = "00:00:00";
+            // 
+            // lbl_BillableThisMonthValue
+            // 
+            this.lbl_BillableThisMonthValue.AutoSize = true;
+            this.lbl_BillableThisMonthValue.Location = new System.Drawing.Point(118, 60);
+            this.lbl_BillableThisMonthValue.Name = "lbl_BillableThisMonthValue";
+            this.lbl_BillableThisMonthValue.Size = new System.Drawing.Size(49, 13);
+            this.lbl_BillableThisMonthValue.TabIndex = 8;
+            this.lbl_BillableThisMonthValue.Text = "00:00:00";
             // 
             // dataGridView_TaskLogList
             // 
@@ -465,7 +548,7 @@ namespace NanoTimeTracker
             this.dataGridView_TaskLogList.Location = new System.Drawing.Point(8, 27);
             this.dataGridView_TaskLogList.Name = "dataGridView_TaskLogList";
             this.dataGridView_TaskLogList.RowContextMenuStrip = this.contextMenuStrip_DataGrid;
-            this.dataGridView_TaskLogList.Size = new System.Drawing.Size(789, 246);
+            this.dataGridView_TaskLogList.Size = new System.Drawing.Size(772, 255);
             this.dataGridView_TaskLogList.TabIndex = 6;
             this.dataGridView_TaskLogList.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_TaskLogList_CellValueChanged);
             this.dataGridView_TaskLogList.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dataGridView_TaskLogList_UserDeletingRow);
@@ -517,13 +600,78 @@ namespace NanoTimeTracker
             this.TimeTaken.Name = "TimeTaken";
             this.TimeTaken.Width = 70;
             // 
+            // grp_DateNavigation
+            // 
+            this.grp_DateNavigation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.grp_DateNavigation.Controls.Add(this.tableLayoutPanel2);
+            this.grp_DateNavigation.Location = new System.Drawing.Point(594, 288);
+            this.grp_DateNavigation.Name = "grp_DateNavigation";
+            this.grp_DateNavigation.Size = new System.Drawing.Size(182, 100);
+            this.grp_DateNavigation.TabIndex = 13;
+            this.grp_DateNavigation.TabStop = false;
+            this.grp_DateNavigation.Text = "Displayed Date";
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Controls.Add(this.dateNavigator_LogFilter, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lbl_TotalThatDay, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lbl_TotalThatDayValue, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lbl_BillableThatDay, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lbl_BillableThatDayValue, 1, 2);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 3;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(176, 81);
+            this.tableLayoutPanel2.TabIndex = 0;
+            // 
+            // grp_Stats
+            // 
+            this.grp_Stats.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.grp_Stats.Controls.Add(this.tableLayoutPanel3);
+            this.grp_Stats.Location = new System.Drawing.Point(397, 288);
+            this.grp_Stats.Name = "grp_Stats";
+            this.grp_Stats.Size = new System.Drawing.Size(191, 100);
+            this.grp_Stats.TabIndex = 14;
+            this.grp_Stats.TabStop = false;
+            this.grp_Stats.Text = "Stats";
+            // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.ColumnCount = 2;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 70F));
+            this.tableLayoutPanel3.Controls.Add(this.lbl_TimeTodayLabel, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.lbl_BillableTimeTodayValue, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.lbl_TimeTodayValue, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.lbl_BillableTodayLabel, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.lbl_BillableTimeThisWeek, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.lbl_BillableThisWeekValue, 1, 2);
+            this.tableLayoutPanel3.Controls.Add(this.lbl_BillableThisMonthValue, 1, 3);
+            this.tableLayoutPanel3.Controls.Add(this.lbl_BillableThisMonth, 0, 3);
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 4;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(185, 81);
+            this.tableLayoutPanel3.TabIndex = 0;
+            // 
             // LogWindow
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-            this.ClientSize = new System.Drawing.Size(805, 391);
-            this.Controls.Add(this.btn_DateNext);
-            this.Controls.Add(this.btn_DatePrev);
-            this.Controls.Add(this.datePicker_FilterDate);
+            this.ClientSize = new System.Drawing.Size(788, 400);
+            this.Controls.Add(this.grp_Stats);
+            this.Controls.Add(this.grp_DateNavigation);
             this.Controls.Add(this.dataGridView_TaskLogList);
             this.Controls.Add(this.btn_Stop);
             this.Controls.Add(this.menuStrip1);
@@ -531,7 +679,7 @@ namespace NanoTimeTracker
             this.Controls.Add(this.grp_Status);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.MinimumSize = new System.Drawing.Size(514, 306);
+            this.MinimumSize = new System.Drawing.Size(680, 306);
             this.Name = "LogWindow";
             this.Text = "Nano TimeTracker - Log Window";
             this.Load += new System.EventHandler(this.LogWindow_Load);
@@ -541,8 +689,15 @@ namespace NanoTimeTracker
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.grp_Status.ResumeLayout(false);
-            this.grp_Status.PerformLayout();
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_TaskLogList)).EndInit();
+            this.grp_DateNavigation.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
+            this.grp_Stats.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -586,15 +741,26 @@ namespace NanoTimeTracker
         private Label lbl_CurrentTaskValue;
         private Label lbl_CategoryLabel;
         private Label lbl_CurrentTaskLabel;
-        private DateTimePicker datePicker_FilterDate;
         private DataGridViewTextBoxColumn StartDateTime;
         private DataGridViewTextBoxColumn EndDateTime;
         private DataGridViewTextBoxColumn TaskCategory;
         private DataGridViewTextBoxColumn TaskName;
         private DataGridViewCheckBoxColumn Billable;
         private DataGridViewTextBoxColumn TimeTaken;
-        private Button btn_DatePrev;
-        private Button btn_DateNext;
+        private DateNavigator dateNavigator_LogFilter;
+        private TableLayoutPanel tableLayoutPanel1;
+        private Label lbl_TotalThatDay;
+        private Label lbl_BillableThatDay;
+        private Label lbl_TotalThatDayValue;
+        private Label lbl_BillableThatDayValue;
+        private Label lbl_BillableTimeThisWeek;
+        private Label lbl_BillableThisMonth;
+        private Label lbl_BillableThisWeekValue;
+        private Label lbl_BillableThisMonthValue;
+        private TableLayoutPanel tableLayoutPanel2;
+        private GroupBox grp_DateNavigation;
+        private GroupBox grp_Stats;
+        private TableLayoutPanel tableLayoutPanel3;
 
     }
 }

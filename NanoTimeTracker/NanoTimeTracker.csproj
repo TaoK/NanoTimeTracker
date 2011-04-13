@@ -60,6 +60,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DateNavigator.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DateNavigator.Designer.cs">
+      <DependentUpon>DateNavigator.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrameworkClassReplacements\LocalFileSettingsProviderConfigurable.cs" />
     <Compile Include="Dialogs\AboutBox.cs">
       <SubType>Form</SubType>
@@ -122,6 +128,10 @@
     <Compile Include="WindowHacker.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="DateNavigator.resx">
+      <DependentUpon>DateNavigator.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Dialogs\AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
       <SubType>Designer</SubType>

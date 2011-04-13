@@ -35,21 +35,23 @@ namespace NanoTimeTracker
             InitializeComponent();
             dataGridView_TaskLogList.Columns["StartDateTime"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
             dataGridView_TaskLogList.Columns["EndDateTime"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
-            //DataView test1 = new DataView(dataSet1.DataTable1);
-            //dataSet1BindingSource.DataSource = dataSet1;
             TaskDialog = new Dialogs.TaskInput();
+            dateNavigator_LogFilter.DateValue = DateTime.Today;
         }
 
         //State
         private bool _displayingDialog;
-        private DateTime? _gridDisplayDate;
         private bool _taskInProgress;
         private DateTime _taskInProgressStartTime;
         private string _taskInProgressDescription = "";
         private string _taskInProgressCategory = "";
         private bool _taskInProgressTimeBillable = true;
-        private double _previousHours;
-        private double _previousBillableHours;
+        private double _todayTotalHours;
+        private double _todayBillableHours;
+        private double _thisWeekBillableHours;
+        private double _thisMonthBillableHours;
+        private double _displayedDayTotalHours;
+        private double _displayedDayBillableHours;
 
         //TEMP
         bool _exiting = false;
@@ -341,13 +343,13 @@ namespace NanoTimeTracker
                 TimeSpan previousDuration;
                 if (_databaseManager.GetTaskDetailsByTask(previousStartDate, out previousEndDate, out previousDescription, out previousCategory, out previousTimeBillable))
                 {
-                    previousDuration = previousStartDate - previousEndDate.Value;
+                    previousDuration = previousStartDate - (previousEndDate == null ? DateTime.Now : previousEndDate.Value);
                     TaskDialog.SetPrompt("Please provide details for the new second task:", "Split Task - Provide New Details", (previousStartDate - new TimeSpan(previousDuration.Ticks/2)), previousEndDate, previousDescription, previousCategory, previousTimeBillable, false);
                     if (TaskDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                     {
                         _databaseManager.UpdateLogTask(previousStartDate, previousStartDate, TaskDialog.TaskStartDate.Value, previousDescription, previousCategory, previousTimeBillable);
                         _databaseManager.StartLoggingTask(TaskDialog.TaskStartDate.Value, TaskDialog.TaskDescription, TaskDialog.TaskCategory, TaskDialog.TaskBillable);
-                        _databaseManager.EndLoggingOpenTask(TaskDialog.TaskStartDate.Value, TaskDialog.TaskEndDate.Value, TaskDialog.TaskDescription, TaskDialog.TaskCategory, TaskDialog.TaskBillable);
+                        _databaseManager.UpdateLogOpenTask(TaskDialog.TaskStartDate.Value, TaskDialog.TaskEndDate, TaskDialog.TaskDescription, TaskDialog.TaskCategory, TaskDialog.TaskBillable);
                         UpdateStateFromData(false);
                     }
                 }
@@ -387,6 +389,11 @@ namespace NanoTimeTracker
         {
             _databaseManager.SaveTimeTrackingDB();
             UpdateStateFromData(true);
+        }
+
+        private void dateNavigator1_DateValueChanged()
+        {
+            UpdateControlDisplayConsistency();
         }
 
 
@@ -468,20 +475,19 @@ namespace NanoTimeTracker
                 timer_StatusUpdate.Stop();
 
             //datePicker
-            datePicker_FilterDate.MaxDate = DateTime.Today;
+            if (!dateNavigator_LogFilter.MaxDate.Equals(DateTime.Today))
+                dateNavigator_LogFilter.MaxDate = DateTime.Today;
 
             //dataGridView filtering
-            DateTime currentFilterDate;
-            if (datePicker_FilterDate.Checked && datePicker_FilterDate.Value != null)
-                currentFilterDate = datePicker_FilterDate.Value.Date;
-            else
-                currentFilterDate = DateTime.Today;
-
+            DateTime currentFilterDate = dateNavigator_LogFilter.DateValue;
             string currentFilterString = string.Format("StartDateTime >= #{0}# And StartDateTime < #{1}#", Utils.FormatDateFullTimeStamp(currentFilterDate), Utils.FormatDateFullTimeStamp(currentFilterDate.AddDays(1)));
 
             if ((dataSet1BindingSource.Filter == null || !dataSet1BindingSource.Filter.Equals(currentFilterString)) && dataSet1BindingSource.SupportsFiltering)
             {
                 dataSet1BindingSource.Filter = currentFilterString;
+                _displayedDayTotalHours = _databaseManager.GetHoursTotals(dateNavigator_LogFilter.DateValue, dateNavigator_LogFilter.DateValue, false);
+                _displayedDayBillableHours = _databaseManager.GetHoursTotals(dateNavigator_LogFilter.DateValue, dateNavigator_LogFilter.DateValue, true);
+                UpdateStatusDisplay();
             }
         }
 
@@ -618,7 +624,7 @@ namespace NanoTimeTracker
                         //end log if end date provided
                         if (providedEndDate != null)
                         {
-                            _databaseManager.EndLoggingOpenTask(providedStartDate, providedEndDate.Value, providedDescription, providedCategory, providedTimeBillable);
+                            _databaseManager.UpdateLogOpenTask(providedStartDate, providedEndDate, providedDescription, providedCategory, providedTimeBillable);
                         }
                     }
 
@@ -636,6 +642,10 @@ namespace NanoTimeTracker
             System.TimeSpan timeSinceTaskStart;
             System.TimeSpan totalTimeToday;
             System.TimeSpan totalBillableTimeToday;
+            System.TimeSpan totalBillableTimeThisWeek;
+            System.TimeSpan totalBillableTimeThisMonth;
+            System.TimeSpan totalTimeSelectedDay;
+            System.TimeSpan totalBillableTimeSelectedDay;
 
             if (_taskInProgress)
             {
@@ -658,12 +668,20 @@ namespace NanoTimeTracker
                     lbl_CategoryValue.Text = "";
             }
             
-            totalTimeToday = timeSinceTaskStart + Utils.DecimalHoursToTimeSpan(_previousHours);
-            totalBillableTimeToday = (_taskInProgressTimeBillable ? timeSinceTaskStart : new TimeSpan()) + Utils.DecimalHoursToTimeSpan(_previousBillableHours);
+            totalTimeToday = timeSinceTaskStart + Utils.DecimalHoursToTimeSpan(_todayTotalHours);
+            totalBillableTimeToday = (_taskInProgressTimeBillable ? timeSinceTaskStart : new TimeSpan()) + Utils.DecimalHoursToTimeSpan(_todayBillableHours);
+            totalBillableTimeThisWeek = (_taskInProgressTimeBillable ? timeSinceTaskStart : new TimeSpan()) + Utils.DecimalHoursToTimeSpan(_thisWeekBillableHours);
+            totalBillableTimeThisMonth = (_taskInProgressTimeBillable ? timeSinceTaskStart : new TimeSpan()) + Utils.DecimalHoursToTimeSpan(_thisMonthBillableHours);
+            totalTimeSelectedDay = (dateNavigator_LogFilter.DateValue.Equals(DateTime.Today) ? timeSinceTaskStart : new TimeSpan()) + Utils.DecimalHoursToTimeSpan(_displayedDayTotalHours);
+            totalBillableTimeSelectedDay = (dateNavigator_LogFilter.DateValue.Equals(DateTime.Today) && _taskInProgressTimeBillable ? timeSinceTaskStart : new TimeSpan()) + Utils.DecimalHoursToTimeSpan(_displayedDayBillableHours);
 
             lbl_WorkingTimeValue.Text = Utils.FormatTimeSpan(timeSinceTaskStart);
             lbl_TimeTodayValue.Text = Utils.FormatTimeSpan(totalTimeToday);
             lbl_BillableTimeTodayValue.Text = Utils.FormatTimeSpan(totalBillableTimeToday);
+            lbl_BillableThisWeekValue.Text = Utils.FormatTimeSpan(totalBillableTimeThisWeek);
+            lbl_BillableThisMonthValue.Text = Utils.FormatTimeSpan(totalBillableTimeThisMonth);
+            lbl_TotalThatDayValue.Text = Utils.FormatTimeSpan(totalTimeSelectedDay);
+            lbl_BillableThatDayValue.Text = Utils.FormatTimeSpan(totalBillableTimeSelectedDay);
         }
 
         private void MaintainDurationByDataGrid(int RowIndex)
@@ -709,8 +727,12 @@ namespace NanoTimeTracker
             }
 
             //retrieve existing totals for display
-            _previousHours = _databaseManager.GetPreviousHoursTotalsToday();
-            _previousBillableHours = _databaseManager.GetPreviousBillableHoursTotalsToday();
+            _todayTotalHours = _databaseManager.GetHoursTotals(DateTime.Today, DateTime.Today, false);
+            _todayBillableHours = _databaseManager.GetHoursTotals(DateTime.Today, DateTime.Today, true);
+            _thisWeekBillableHours = _databaseManager.GetHoursTotals(DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek), DateTime.Today, true);
+            _thisMonthBillableHours = _databaseManager.GetHoursTotals(DateTime.Today.AddDays(1-DateTime.Today.Day), DateTime.Today, true);
+            if (dateNavigator_LogFilter.DateValue.Equals(DateTime.Today)) _displayedDayTotalHours = _todayTotalHours;
+            if (dateNavigator_LogFilter.DateValue.Equals(DateTime.Today)) _displayedDayBillableHours = _todayBillableHours;
 
             //UI updates specific to task running change
             UpdateControlDisplayConsistency();
@@ -719,7 +741,7 @@ namespace NanoTimeTracker
                 if (_taskInProgress)
                 {
                     btn_Stop.Focus();
-                    datePicker_FilterDate.Value = DateTime.Today;
+                    dateNavigator_LogFilter.DateValue = DateTime.Today;
                     dataGridView_TaskLogList.CurrentCell = dataGridView_TaskLogList.Rows[dataGridView_TaskLogList.Rows.Count - 1].Cells[0];
                 }
                 else
@@ -729,27 +751,6 @@ namespace NanoTimeTracker
         }
 
         #endregion
-
-
-        //This is going to become a user control...
-        private void datePicker_FilterDate_ValueChanged(object sender, EventArgs e)
-        {
-            UpdateControlDisplayConsistency();
-            if (datePicker_FilterDate.MaxDate.Equals(datePicker_FilterDate.Value) && btn_DateNext.Enabled)
-                btn_DateNext.Enabled = false;
-            else if (!datePicker_FilterDate.MaxDate.Equals(datePicker_FilterDate.Value) && !btn_DateNext.Enabled)
-                btn_DateNext.Enabled = true;
-        }
-
-        private void btn_DatePrev_Click(object sender, EventArgs e)
-        {
-            datePicker_FilterDate.Value = datePicker_FilterDate.Value.AddDays(-1);
-        }
-
-        private void btn_DateNext_Click(object sender, EventArgs e)
-        {
-            datePicker_FilterDate.Value = datePicker_FilterDate.Value.AddDays(1);
-        }
 
     }
 }
