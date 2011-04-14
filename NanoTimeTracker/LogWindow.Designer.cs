@@ -53,7 +53,7 @@ namespace NanoTimeTracker
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogWindow));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.btn_Start = new System.Windows.Forms.Button();
             this.btn_Stop = new System.Windows.Forms.Button();
             this.timer_StatusUpdate = new System.Windows.Forms.Timer(this.components);
@@ -87,11 +87,11 @@ namespace NanoTimeTracker
             this.lbl_TimeTodayLabel = new System.Windows.Forms.Label();
             this.grp_Status = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.dateNavigator_LogFilter = new NanoTimeTracker.DateNavigator();
             this.lbl_CategoryValue = new System.Windows.Forms.Label();
             this.lbl_CurrentTaskValue = new System.Windows.Forms.Label();
             this.lbl_CurrentTaskLabel = new System.Windows.Forms.Label();
             this.lbl_CategoryLabel = new System.Windows.Forms.Label();
+            this.dateNavigator_LogFilter = new NanoTimeTracker.DateNavigator();
             this.lbl_TotalThatDay = new System.Windows.Forms.Label();
             this.lbl_BillableThatDay = new System.Windows.Forms.Label();
             this.lbl_TotalThatDayValue = new System.Windows.Forms.Label();
@@ -111,6 +111,13 @@ namespace NanoTimeTracker
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.grp_Stats = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.backupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.restoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.contextMenuStrip_SysTrayContext.SuspendLayout();
             this.contextMenuStrip_DataGrid.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -282,7 +289,14 @@ namespace NanoTimeTracker
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportToolStripMenuItem,
+            this.importToolStripMenuItem,
+            this.toolStripSeparator3,
+            this.backupToolStripMenuItem,
+            this.restoreToolStripMenuItem,
+            this.toolStripSeparator1,
             this.closeToolStripMenuItem,
+            this.toolStripSeparator2,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
@@ -409,18 +423,6 @@ namespace NanoTimeTracker
             this.tableLayoutPanel1.Size = new System.Drawing.Size(252, 81);
             this.tableLayoutPanel1.TabIndex = 17;
             // 
-            // dateNavigator_LogFilter
-            // 
-            this.tableLayoutPanel2.SetColumnSpan(this.dateNavigator_LogFilter, 2);
-            this.dateNavigator_LogFilter.DateValue = new System.DateTime(2011, 4, 13, 0, 0, 0, 0);
-            this.dateNavigator_LogFilter.Location = new System.Drawing.Point(3, 3);
-            this.dateNavigator_LogFilter.MaxDate = new System.DateTime(9998, 12, 31, 0, 0, 0, 0);
-            this.dateNavigator_LogFilter.MinDate = new System.DateTime(1753, 1, 1, 0, 0, 0, 0);
-            this.dateNavigator_LogFilter.Name = "dateNavigator_LogFilter";
-            this.dateNavigator_LogFilter.Size = new System.Drawing.Size(169, 27);
-            this.dateNavigator_LogFilter.TabIndex = 16;
-            this.dateNavigator_LogFilter.DateValueChanged += new NanoTimeTracker.DateNavigator.DateValueChangeHandler(this.dateNavigator1_DateValueChanged);
-            // 
             // lbl_CategoryValue
             // 
             this.lbl_CategoryValue.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
@@ -456,6 +458,18 @@ namespace NanoTimeTracker
             this.lbl_CategoryLabel.Size = new System.Drawing.Size(52, 13);
             this.lbl_CategoryLabel.TabIndex = 14;
             this.lbl_CategoryLabel.Text = "Category:";
+            // 
+            // dateNavigator_LogFilter
+            // 
+            this.tableLayoutPanel2.SetColumnSpan(this.dateNavigator_LogFilter, 2);
+            this.dateNavigator_LogFilter.DateValue = new System.DateTime(2011, 4, 13, 0, 0, 0, 0);
+            this.dateNavigator_LogFilter.Location = new System.Drawing.Point(3, 3);
+            this.dateNavigator_LogFilter.MaxDate = new System.DateTime(9998, 12, 31, 0, 0, 0, 0);
+            this.dateNavigator_LogFilter.MinDate = new System.DateTime(1753, 1, 1, 0, 0, 0, 0);
+            this.dateNavigator_LogFilter.Name = "dateNavigator_LogFilter";
+            this.dateNavigator_LogFilter.Size = new System.Drawing.Size(169, 27);
+            this.dateNavigator_LogFilter.TabIndex = 16;
+            this.dateNavigator_LogFilter.DateValueChanged += new NanoTimeTracker.DateNavigator.DateValueChangeHandler(this.dateNavigator1_DateValueChanged);
             // 
             // lbl_TotalThatDay
             // 
@@ -593,9 +607,9 @@ namespace NanoTimeTracker
             // TimeTaken
             // 
             this.TimeTaken.DataPropertyName = "TimeTaken";
-            dataGridViewCellStyle2.Format = "N2";
-            dataGridViewCellStyle2.NullValue = null;
-            this.TimeTaken.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Format = "N2";
+            dataGridViewCellStyle4.NullValue = null;
+            this.TimeTaken.DefaultCellStyle = dataGridViewCellStyle4;
             this.TimeTaken.HeaderText = "TimeTaken";
             this.TimeTaken.Name = "TimeTaken";
             this.TimeTaken.Width = 70;
@@ -665,6 +679,49 @@ namespace NanoTimeTracker
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(185, 81);
             this.tableLayoutPanel3.TabIndex = 0;
+            // 
+            // backupToolStripMenuItem
+            // 
+            this.backupToolStripMenuItem.Name = "backupToolStripMenuItem";
+            this.backupToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.backupToolStripMenuItem.Text = "Backup...";
+            this.backupToolStripMenuItem.Click += new System.EventHandler(this.backupToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
+            // 
+            // restoreToolStripMenuItem
+            // 
+            this.restoreToolStripMenuItem.Name = "restoreToolStripMenuItem";
+            this.restoreToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.restoreToolStripMenuItem.Text = "Restore...";
+            this.restoreToolStripMenuItem.Click += new System.EventHandler(this.restoreToolStripMenuItem_Click);
+            // 
+            // exportToolStripMenuItem
+            // 
+            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportToolStripMenuItem.Text = "Export...";
+            this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
+            // 
+            // importToolStripMenuItem
+            // 
+            this.importToolStripMenuItem.Name = "importToolStripMenuItem";
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.importToolStripMenuItem.Text = "Import...";
+            this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(149, 6);
             // 
             // LogWindow
             // 
@@ -761,6 +818,13 @@ namespace NanoTimeTracker
         private GroupBox grp_DateNavigation;
         private GroupBox grp_Stats;
         private TableLayoutPanel tableLayoutPanel3;
+        private ToolStripMenuItem exportToolStripMenuItem;
+        private ToolStripMenuItem importToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator3;
+        private ToolStripMenuItem backupToolStripMenuItem;
+        private ToolStripMenuItem restoreToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripSeparator toolStripSeparator2;
 
     }
 }

@@ -1,5 +1,13 @@
 Nano TimeTracker change log
 
+Version 0.9.5 - 2011-04-XX
+-----------
+ - Added persistent storage/database
+ - Added date navigation
+ - Added week/month/selected day stats
+ - Added export to CSV
+ - Misc fixes (splitting, sorting, UI reorganization, dataset rendering performance)
+
 Version 0.9.4 - 2011-04-09
 -----------
  - Added context menu on task log grid:

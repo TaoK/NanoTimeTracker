@@ -34,7 +34,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: Guid("29587b82-e2d3-4f8d-8f49-87ceb1fa1d1b")]
-[assembly: AssemblyVersion("0.9.4.*")]
+[assembly: AssemblyVersion("0.9.5.*")]
 //AssemblyFileVersion separate definition breaks "LocalUserAppDataPath"
 // see: http://all-things-pure.blogspot.com/2009/09/assembly-version-file-version-product.html
 //[assembly: AssemblyFileVersion("0.9.1.*")]

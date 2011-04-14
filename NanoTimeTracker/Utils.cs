@@ -61,5 +61,33 @@ namespace NanoTimeTracker
             System.IO.File.Delete(targetFilePath + ".tmp");
         }
 
+        public static void ExportFilteredDataTableToCsv(DataTable targetDataTable, string targetFilePath, string filterString)
+        {
+            using (System.IO.StreamWriter outFile = new System.IO.StreamWriter(targetFilePath, false, Encoding.UTF8))
+            {
+                for (int i = 0; i < targetDataTable.Columns.Count; i++)
+                {
+                    outFile.Write("\"");
+                    outFile.Write(targetDataTable.Columns[i].ColumnName.Replace("\"", "\"\""));
+                    outFile.Write("\"");
+                    outFile.Write(i == targetDataTable.Columns.Count - 1 ? Environment.NewLine : ",");
+                }
+                foreach (DataRow row in targetDataTable.Select(filterString))
+                {
+                    for (int i = 0; i < targetDataTable.Columns.Count; i++)
+                    {
+                        outFile.Write("\"");
+                        if (targetDataTable.Columns[i].DataType.Equals(typeof(DateTime)))
+                            outFile.Write(FormatDateFullTimeStamp((DateTime)row[i]));
+                        else
+                            outFile.Write(row[i].ToString().Replace("\"", "\"\""));
+                        outFile.Write("\"");
+                        outFile.Write(i == targetDataTable.Columns.Count - 1 ? Environment.NewLine : ",");
+                    }
+                }
+            }
+
+        }
+
     }
 }

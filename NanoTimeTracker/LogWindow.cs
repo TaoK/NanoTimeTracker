@@ -36,8 +36,9 @@ namespace NanoTimeTracker
             dataGridView_TaskLogList.Columns["StartDateTime"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
             dataGridView_TaskLogList.Columns["EndDateTime"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
             TaskDialog = new Dialogs.TaskInput();
-            dateNavigator_LogFilter.DateValue = DateTime.Today;
         }
+
+        #region Local Variables
 
         //State
         private bool _displayingDialog;
@@ -63,6 +64,8 @@ namespace NanoTimeTracker
         private Dialogs.TaskInput TaskDialog;
         private Hotkey TaskHotKey;
         private DatabaseManager _databaseManager;
+
+        #endregion
 
         #region Event Handlers
 
@@ -99,6 +102,8 @@ namespace NanoTimeTracker
             _databaseManager.LoadDatabase();
             dataSet1BindingSource = _databaseManager.GetBindingSource();
             dataGridView_TaskLogList.DataSource = dataSet1BindingSource;
+
+            dateNavigator_LogFilter.DateValue = DateTime.Today;
 
             UpdateControlDisplayConsistency(); //set initial display filter, etc (will be called again in updatestate)
             UpdateStateFromData(true);
@@ -396,9 +401,66 @@ namespace NanoTimeTracker
             UpdateControlDisplayConsistency();
         }
 
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Dialogs.ExportOptions exportDialog = new NanoTimeTracker.Dialogs.ExportOptions();
+            exportDialog.FromDate = dateNavigator_LogFilter.DateValue;
+            exportDialog.ToDate = dateNavigator_LogFilter.DateValue;
+            if (exportDialog.ShowDialog() == DialogResult.OK)
+            {
+                SaveFileDialog exportSaveDialog = new SaveFileDialog();
+                exportSaveDialog.AddExtension = true;
+                exportSaveDialog.AutoUpgradeEnabled = true;
+                exportSaveDialog.CheckPathExists = true;
+                exportSaveDialog.DefaultExt = ".csv";
+                exportSaveDialog.Filter = "CSV (Comma-Separated Value) File|*.csv";
+                //exportSaveDialog.InitialDirectory //don't know what to do with this yet...
+                exportSaveDialog.OverwritePrompt = true;
+                exportSaveDialog.SupportMultiDottedExtensions = true;
+                exportSaveDialog.Title = "Export";
+                exportSaveDialog.ValidateNames = true;
+                if (exportSaveDialog.ShowDialog() == DialogResult.OK)
+                {
+                    _databaseManager.Export(exportSaveDialog.FileName, exportDialog.FromDate, exportDialog.ToDate, exportDialog.BillableOnly);
+                }
+                exportSaveDialog.Dispose();
+            }
+            exportDialog.Dispose();
+        }
+
+        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog importDialog = new OpenFileDialog();
+            importDialog.AddExtension = true;
+            importDialog.AutoUpgradeEnabled = true;
+            importDialog.CheckFileExists = true;
+            importDialog.CheckPathExists = true;
+            importDialog.DefaultExt = ".csv";
+            importDialog.Filter = "CSV (Comma-Separated Value) File|*.csv";
+            //exportSaveDialog.InitialDirectory //don't know what to do with this yet...
+            importDialog.Multiselect = false;
+            importDialog.SupportMultiDottedExtensions = true;
+            importDialog.Title = "Import";
+            importDialog.ValidateNames = true;
+            if (importDialog.ShowDialog() == DialogResult.OK)
+            {
+                _databaseManager.Import(importDialog.FileName);
+            }
+            importDialog.Dispose();
+        }
+
+        private void backupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Sorry, this isn't implemented yet!");
+        }
+
+        private void restoreToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Sorry, this isn't implemented yet!");
+        }
+
 
         #endregion
-
 
         #region Local Methods
 
@@ -742,7 +804,8 @@ namespace NanoTimeTracker
                 {
                     btn_Stop.Focus();
                     dateNavigator_LogFilter.DateValue = DateTime.Today;
-                    dataGridView_TaskLogList.CurrentCell = dataGridView_TaskLogList.Rows[dataGridView_TaskLogList.Rows.Count - 1].Cells[0];
+                    if (dataGridView_TaskLogList.Rows.Count > 0)
+                        dataGridView_TaskLogList.CurrentCell = dataGridView_TaskLogList.Rows[dataGridView_TaskLogList.Rows.Count - 1].Cells[0];
                 }
                 else
                     btn_Start.Focus();

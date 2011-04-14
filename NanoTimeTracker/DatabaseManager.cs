@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Data;
 using System.Windows.Forms;
+using LumenWorks.Framework.IO.Csv;
 
 namespace NanoTimeTracker
 {
@@ -247,5 +248,23 @@ namespace NanoTimeTracker
             }
         }
 
+        internal void Export(string destinationFileName, DateTime fromDate, DateTime toDate, bool billableEntriesOnly)
+        {
+            string filterString = string.Format("StartDateTime >= #{0}# And StartDateTime < #{1}#", Utils.FormatDateFullTimeStamp(fromDate), Utils.FormatDateFullTimeStamp(toDate.AddDays(1)));
+            if (billableEntriesOnly) filterString += " And BillableFlag = True";
+            Utils.ExportFilteredDataTableToCsv(logTable, destinationFileName, filterString);
+        }
+
+        internal void Import(string sourceFileName)
+        {
+            /*
+             * ADD AUTO-DETECTION
+             * AND TEST FOR "Bush hid the facts" BUG IN AUTO-DETECTION ROUTINE!
+             * AND ADD REFERENCE TO THIS IN AUTO-DETECTION ROUTINE DESCRIPTION
+            using (System.IO.StreamReader reader = 
+            CsvReader importReader = new CsvReader(
+             */
+            throw new NotImplementedException();
+        }
     }
 }
