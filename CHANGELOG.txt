@@ -1,6 +1,12 @@
 Nano TimeTracker change log
 
-Version 0.9.5 - 2011-04-XX
+Version 0.9.6 - 2011-08-30
+-----------
+ - Added (basic) CSV Import feature
+ - Added Task name and Category auto-complete
+
+
+Version 0.9.5 - 2011-04-14
 -----------
  - Added persistent storage/database
  - Added date navigation

@@ -100,6 +100,8 @@ namespace NanoTimeTracker
 
             _databaseManager = new DatabaseManager();
             _databaseManager.LoadDatabase();
+            _databaseManager.ReadAutoCompletionDataFromDB();
+            TaskDialog.AutoCompletionCache = _databaseManager.AutoCompletionCache;
             dataSet1BindingSource = _databaseManager.GetBindingSource();
             dataGridView_TaskLogList.DataSource = dataSet1BindingSource;
 
@@ -241,6 +243,17 @@ namespace NanoTimeTracker
                     //looks like we should consider it, call the function that does the work.
                     MaintainDurationByDataGrid(e.RowIndex);
                 }
+
+                if (dataGridView_TaskLogList.Columns[e.ColumnIndex].Name == "TaskName"
+                    || dataGridView_TaskLogList.Columns[e.ColumnIndex].Name == "TaskCategory"
+                    || dataGridView_TaskLogList.Columns[e.ColumnIndex].Name == "BillableFlag"
+                    )
+                {
+                    _databaseManager.AutoCompletionCache.Feed((string)dataGridView_TaskLogList.Rows[e.RowIndex].Cells["TaskName"].Value,
+                        (string)dataGridView_TaskLogList.Rows[e.RowIndex].Cells["TaskCategory"].Value,
+                        (bool)dataGridView_TaskLogList.Rows[e.RowIndex].Cells["BillableFlag"].Value);
+                }
+
 
                 if (false)
                 {

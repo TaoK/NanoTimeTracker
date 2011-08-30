@@ -47,7 +47,7 @@ namespace NanoTimeTracker.Dialogs
         /// </summary>
         private void InitializeComponent()
         {
-            this.txt_Description = new System.Windows.Forms.TextBox();
+            this.txt_Description = new FrameworkClassReplacements.MultilineAutoCompleteTextBox();
             this.btn_OK = new System.Windows.Forms.Button();
             this.btn_Cancel = new System.Windows.Forms.Button();
             this.lbl_Description = new System.Windows.Forms.Label();
@@ -74,6 +74,7 @@ namespace NanoTimeTracker.Dialogs
             this.txt_Description.Name = "txt_Description";
             this.txt_Description.Size = new System.Drawing.Size(426, 55);
             this.txt_Description.TabIndex = 0;
+            this.txt_Description.TextChanged += new System.EventHandler(this.txt_Description_TextChanged);
             // 
             // btn_OK
             // 
@@ -126,6 +127,7 @@ namespace NanoTimeTracker.Dialogs
             this.txt_Category.Name = "txt_Category";
             this.txt_Category.Size = new System.Drawing.Size(361, 20);
             this.txt_Category.TabIndex = 1;
+            this.txt_Category.TextChanged += new System.EventHandler(this.txt_Category_TextChanged);
             // 
             // lbl_EntryPrompt
             // 
@@ -229,7 +231,7 @@ namespace NanoTimeTracker.Dialogs
 
         #endregion
 
-        private System.Windows.Forms.TextBox txt_Description;
+        private FrameworkClassReplacements.MultilineAutoCompleteTextBox txt_Description;
         private System.Windows.Forms.Button btn_OK;
         private System.Windows.Forms.Button btn_Cancel;
         private System.Windows.Forms.Label lbl_Description;

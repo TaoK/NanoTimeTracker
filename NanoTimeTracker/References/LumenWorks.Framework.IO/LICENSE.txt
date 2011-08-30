@@ -22,5 +22,5 @@
 Source code may be obtained online at the Code Project, in the article it was retrieved from:
 http://www.codeproject.com/KB/database/CsvReader.aspx
 
-It can also be obtained by writing to the email address starting with tao, and is 
-hosted at klerks dot biz.
+It can also be obtained by writing to the email address starting with tao, hosted at klerks 
+dot biz.

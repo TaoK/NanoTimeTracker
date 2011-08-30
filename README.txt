@@ -17,12 +17,13 @@ Features:
  - Single-file install-free program, with option to keep data with executable or 
      in standard user data folders
  - Export to CSV
+ - Import from CSV
+ - Autocomplete in task name and category tracking
 
 
 This app is not really finished, many enhancements are possible and planned, most 
 notably:
- - Overlapping time detection (on manual edit)
- - Autocomplete functionality in task name tracking
+ - Overlapping time detection (on manual edit and import)
  - Hotkey selection
  - Tracking billability more easily
  - A more elegant and configurable data persistence mechanism
@@ -44,6 +45,12 @@ Some icons used in the application are licensed under LGPL, see the
 
 This application uses the ManagedWinAPI library, licensed under LGPL; see the 
 "NanoTimeTracker/References/ManagedWinAPI" folder for details.
+
+This application uses the LinqBridge library, for convenience, supporting extension 
+methods and Linq-to-Objects despite this being a .Net 2.0 application. LinqBridge 
+is licensed under the BSD 3-clause license (details in 
+"NanoTimeTracker/References/LinqBridge"), and its homepage is here: 
+http://code.google.com/p/linqbridge/
 
 This application uses the LumenWorks.Framework.IO library, licensed under the MIT
 license; see the "NanoTimeTracker/References/LumenWorks.Framework.IO" folder for 

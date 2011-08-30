@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Data;
 using System.Windows.Forms;
+using System.Collections.Generic;
 using LumenWorks.Framework.IO.Csv;
 
 namespace NanoTimeTracker
@@ -75,6 +76,15 @@ namespace NanoTimeTracker
                 dataSet.ReadXml(DeriveLogFileName());
         }
 
+        private AutoCompletionCache _autoCompletionCache = new AutoCompletionCache();
+        internal AutoCompletionCache AutoCompletionCache { get { return _autoCompletionCache; } }
+
+        public void ReadAutoCompletionDataFromDB()
+        {
+            DataRow[] recentRows = logTable.Select("StartDateTime > #" + Utils.FormatDateFullTimeStamp(DateTime.Now.AddDays(-30)) + "#");
+            foreach (DataRow recentRow in recentRows)
+                _autoCompletionCache.Feed((string)recentRow["TaskName"].ToString(), (string)recentRow["TaskCategory"], (bool)recentRow["BillableFlag"]);
+        }
 
 
         public bool GetInProgressTaskDetails(out DateTime taskStartTime, out string taskDescription, out string taskCategory, out bool taskBillable)
@@ -108,7 +118,7 @@ namespace NanoTimeTracker
             newRow["BillableFlag"] = taskTimeBillable;
             logTable.Rows.Add(newRow);
             SaveTimeTrackingDB();
-
+            _autoCompletionCache.Feed(taskDescription, taskCategory, taskTimeBillable);
         }
 
         public void UpdateLogOpenTask(DateTime taskStartTime, DateTime? taskEndDate, string taskDescription, string taskCategory, bool taskTimeBillable)
@@ -149,6 +159,7 @@ namespace NanoTimeTracker
                 //save WITHOUT switching day
                 SaveTimeTrackingDB();
             }
+            _autoCompletionCache.Feed(taskDescription, taskCategory, taskTimeBillable);
             return taskStartTime;
         }
 
@@ -258,13 +269,207 @@ namespace NanoTimeTracker
         internal void Import(string sourceFileName)
         {
             /*
-             * ADD AUTO-DETECTION
+             * TODO: Add characterset auto-detection
              * AND TEST FOR "Bush hid the facts" BUG IN AUTO-DETECTION ROUTINE!
              * AND ADD REFERENCE TO THIS IN AUTO-DETECTION ROUTINE DESCRIPTION
-            using (System.IO.StreamReader reader = 
-            CsvReader importReader = new CsvReader(
              */
-            throw new NotImplementedException();
+            using (System.IO.StreamReader textReader = System.IO.File.OpenText(sourceFileName))
+            using (CsvReader importReader = new CsvReader(textReader, true, ',', '"', '"', '#', ValueTrimmingOptions.All, 0x1000))
+            {
+                //other defaults for our accepted format:
+                importReader.SupportsMultiline = true;
+                importReader.SkipEmptyLines = true;
+                importReader.DefaultParseErrorAction = ParseErrorAction.ThrowException;
+                importReader.MissingFieldAction = MissingFieldAction.ReplaceByEmpty;
+
+                string[] headers = importReader.GetFieldHeaders();
+
+                Dictionary<string, int> importColumnIDs = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+
+                bool abort = false;
+
+                for (int i = 0; i < headers.Length && !abort; i++)
+                {
+                    if (importColumnIDs.ContainsKey(headers[i]))
+                    {
+                        if (MessageBox.Show(string.Format("Duplicate column detected, name \"{0}\"! Ignore new column?", headers[i]), "Duplicate Column Name", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
+                            abort = true;
+                    }
+                    else
+                    {
+                        if (headers[i].Equals("StartDateTime", StringComparison.InvariantCultureIgnoreCase)
+                            || headers[i].Equals("EndDateTime", StringComparison.InvariantCultureIgnoreCase)
+                            || headers[i].Equals("TaskCategory", StringComparison.InvariantCultureIgnoreCase)
+                            || headers[i].Equals("TaskName", StringComparison.InvariantCultureIgnoreCase)
+                            || headers[i].Equals("BillableFlag", StringComparison.InvariantCultureIgnoreCase)
+                            || headers[i].Equals("TimeTaken", StringComparison.InvariantCultureIgnoreCase)
+                            )
+                            importColumnIDs.Add(headers[i], i);
+                        else if (MessageBox.Show(string.Format("Unsupported column detected, name \"{0}\"! Ignore new column?", headers[i]), "Unknown Column Name", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
+                            abort = true;
+                    }
+                }
+
+                if (!abort && !importColumnIDs.ContainsKey("StartDateTime"))
+                {
+                    MessageBox.Show("Required column \"StartDateTime\" not found in import file. Aborting.", "Missing column", MessageBoxButtons.OK);
+                    abort = true;
+                }
+
+                if (!abort && !importColumnIDs.ContainsKey("TaskName"))
+                {
+                    MessageBox.Show("Required column \"TaskName\" not found in import file. Aborting.", "Missing column", MessageBoxButtons.OK);
+                    abort = true;
+                }
+
+                if (!abort
+                    && !importColumnIDs.ContainsKey("EndDateTime")
+                    && !importColumnIDs.ContainsKey("TimeTaken")
+                    )
+                {
+                    MessageBox.Show("Neither \"EndDateTime\" nor \"TimeTaken\" was found in import file; one or the other must be provided. Aborting.", "Missing column", MessageBoxButtons.OK);
+                    abort = true;
+                }
+
+                bool alwaysOverwriteOnMismatch = false;
+
+                //main record import loop... 
+                while (!abort && importReader.ReadNextRecord())
+                {
+                    DateTime startTime;
+                    DateTime endTime = DateTime.MinValue;
+                    string taskCategory = null;
+                    string taskName;
+                    bool? taskBillable = null;
+                    double? providedTimeTaken = null;
+                    double? calculatedTimeTaken = null;
+
+                    long currentRowNumber = importReader.CurrentRecordIndex + 1;
+
+                    if (!DateTime.TryParse(importReader[importColumnIDs["StartDateTime"]], out startTime))
+                    {
+                        MessageBox.Show(string.Format("Invalid \"StartDateTime\" value found, record number {0} in import file. Aborting.", currentRowNumber), "Invalid Value Found", MessageBoxButtons.OK);
+                        abort = true;
+                    }
+
+                    if (!abort && importColumnIDs.ContainsKey("EndDateTime"))
+                    {
+                        if (DateTime.TryParse(importReader[importColumnIDs["EndDateTime"]], out endTime))
+                        {
+                            calculatedTimeTaken = (endTime - startTime).TotalHours;
+                        }
+                        else
+                        {
+                            MessageBox.Show(string.Format("Invalid \"EndDateTime\" value found, record number {0} in import file. Aborting.", currentRowNumber), "Invalid Value Found", MessageBoxButtons.OK);
+                            abort = true;
+                        }
+                    }
+
+                    if (importColumnIDs.ContainsKey("TaskCategory"))
+                        taskCategory = importReader[importColumnIDs["TaskCategory"]];
+
+                    taskName = importReader[importColumnIDs["TaskName"]];
+
+                    bool parsedBillable;
+                    if (bool.TryParse(importReader[importColumnIDs["BillableFlag"]], out parsedBillable))
+                    {
+                        taskBillable = parsedBillable;
+                    }
+                    else
+                    {
+                        MessageBox.Show(string.Format("Invalid \"BillableFlag\" value found, record number {0} in import file. Aborting.", currentRowNumber), "Invalid Value Found", MessageBoxButtons.OK);
+                        abort = true;
+                    }
+
+                    if (!abort && importColumnIDs.ContainsKey("TimeTaken"))
+                    {
+                        double parsedTimeTaken = 0;
+                        if (double.TryParse(importReader[importColumnIDs["TimeTaken"]], out parsedTimeTaken))
+                        {
+                            providedTimeTaken = parsedTimeTaken;
+                            endTime = startTime.AddHours(providedTimeTaken.Value);
+                        }
+                        else
+                        {
+                            MessageBox.Show(string.Format("Invalid \"TimeTaken\" value found, record number {0} in import file. Aborting.", currentRowNumber), "Invalid Value Found", MessageBoxButtons.OK);
+                            abort = true;
+                        }
+                    }
+
+                    if (calculatedTimeTaken != null 
+                        && providedTimeTaken != null
+                        && Math.Abs(calculatedTimeTaken.Value - providedTimeTaken.Value) > 0.01
+                        )
+                    {
+                        MessageBox.Show(string.Format("Inconsistent \"EndDateTime\" and \"TimeTaken\" values found, record number {0} in import file. Aborting.", currentRowNumber), "Inconsistent Values Found", MessageBoxButtons.OK);
+                        abort = true;
+                    }
+
+                    if (!abort)
+                    {
+                        DataRow[] possibleMatch = logTable.Select("StartDateTime = #" + Utils.FormatDateFullTimeStamp(startTime) + "#");
+                        if (possibleMatch.Length > 0)
+                        {
+                            if (possibleMatch[0]["EndDateTime"].ToString() == endTime.ToString()
+                                && (taskCategory == null || possibleMatch[0]["TaskCategory"].ToString() == taskCategory)
+                                && possibleMatch[0]["TaskName"].ToString() == taskName
+                                && (taskBillable == null || possibleMatch[0]["BillableFlag"].ToString() == taskBillable.Value.ToString())
+                                )
+                            {
+                                //Nothing to do, the import data exactly matches the existing data.
+                            }
+                            else
+                            {
+                                bool overWriteRecord = false;
+
+                                if (alwaysOverwriteOnMismatch)
+                                    overWriteRecord = true;
+                                else
+                                {
+                                    if (Dialogs.DismissableConfirmationWindow.ShowMessage("Overwrite Entry?", string.Format("Existing entry found matching import data for row {0}; click OK to overwrite the existing entry, or Cancel to abort the import.", currentRowNumber), out alwaysOverwriteOnMismatch) == DialogResult.OK)
+                                        overWriteRecord = true;
+                                    else
+                                        abort = true;
+                                }
+
+                                if (overWriteRecord)
+                                {
+                                    possibleMatch[0]["EndDateTime"] = endTime;
+                                    possibleMatch[0]["TaskCategory"] = taskCategory;
+                                    possibleMatch[0]["TaskName"] = taskName;
+                                    if (taskBillable != null)
+                                        possibleMatch[0]["BillableFlag"] = taskBillable.Value;
+                                    possibleMatch[0]["TimeTaken"] = providedTimeTaken ?? calculatedTimeTaken;
+                                    possibleMatch[0].AcceptChanges();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            DataRow newRow = logTable.NewRow();
+                            newRow["StartDateTime"] = startTime;
+                            newRow["EndDateTime"] = endTime;
+                            newRow["TaskCategory"] = taskCategory;
+                            newRow["TaskName"] = taskName;
+                            if (taskBillable == null)
+                                newRow["BillableFlag"] = true;
+                            else
+                                newRow["BillableFlag"] = taskBillable.Value;
+                            newRow["TimeTaken"] = providedTimeTaken ?? calculatedTimeTaken;
+                            logTable.Rows.Add(newRow);
+                        }
+
+                        //TODO: Add consistency checks here like in UI edit.
+                    }
+                }
+
+                //everything went OK, save updated DB...?
+                //TODO: consider reloading instead of saving, if we ended up aborting.
+               SaveTimeTrackingDB(false);
+
+                if (!abort)
+                    MessageBox.Show("File imported successfully!", "Success", MessageBoxButtons.OK);
+            }
         }
     }
 }

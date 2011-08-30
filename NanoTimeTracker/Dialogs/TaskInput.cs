@@ -34,10 +34,34 @@ namespace NanoTimeTracker.Dialogs
             InitializeComponent();
         }
 
+        private AutoCompletionCache _autoCompletionCache;
+        public AutoCompletionCache AutoCompletionCache
+        {
+            get { return _autoCompletionCache; }
+            set { 
+                _autoCompletionCache = value;
+                if (_autoCompletionCache != null)
+                {
+                    //make sure we have our autocompletion set up
+                    txt_Description.AutoCompleteMode = AutoCompleteMode.Suggest;
+                    txt_Description.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                    txt_Description.AutoCompleteCustomSource = _autoCompletionCache.DescriptionSource;
+                    txt_Category.AutoCompleteMode = AutoCompleteMode.Suggest;
+                    txt_Category.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                    txt_Category.AutoCompleteCustomSource = _autoCompletionCache.CategorySource(null);
+                }
+                else
+                {
+                    txt_Description.AutoCompleteMode = AutoCompleteMode.None;
+                    txt_Category.AutoCompleteMode = AutoCompleteMode.None;
+                }
+            }
+        }
+
         public string TaskDescription
         {
             get { return txt_Description.Text; }
-            set { txt_Description.Text = value; }
+            set { txt_Description.SkipSuggestionOnNextTextChange = true; txt_Description.Text = value; }
         }
 
         public string TaskCategory
@@ -177,6 +201,33 @@ namespace NanoTimeTracker.Dialogs
                     MessageBox.Show("A start time must be provided.", "Missing Start Time", MessageBoxButtons.OK);
                     e.Cancel = true;
                 }
+
+                if (!e.Cancel 
+                    && ((AutoCompletionCache.BillableFlagByCategory(txt_Category.Text) ?? chk_Billable.Checked) != chk_Billable.Checked)
+                    )
+                {
+                    if (MessageBox.Show("The \"Billable\" flag doesn't match previous values for the given Category; would you like to continue with the provided value?", "Billable mismatch - continue?", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                        e.Cancel = true;
+                }
+            }
+        }
+
+        private void txt_Description_TextChanged(object sender, EventArgs e)
+        {
+            if (AutoCompletionCache != null)
+            {
+                txt_Category.AutoCompleteCustomSource = AutoCompletionCache.CategorySource(txt_Description.Text);
+                if (txt_Category.AutoCompleteCustomSource.Count == 1)
+                    txt_Category.Text = txt_Category.AutoCompleteCustomSource[0];
+                chk_Billable.Checked = AutoCompletionCache.BillableFlagByDescription(txt_Description.Text) ?? chk_Billable.Checked;
+            }
+        }
+
+        private void txt_Category_TextChanged(object sender, EventArgs e)
+        {
+            if (AutoCompletionCache != null)
+            {
+                chk_Billable.Checked = AutoCompletionCache.BillableFlagByCategory(txt_Category.Text) ?? chk_Billable.Checked;
             }
         }
 
