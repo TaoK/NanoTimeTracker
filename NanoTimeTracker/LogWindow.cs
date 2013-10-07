@@ -75,8 +75,9 @@ namespace NanoTimeTracker
             NoTaskActiveIcon = new Icon(typeof(Icons.IconTypePlaceholder), "edit-clear-history-2-combined.ico");
 
             TaskHotKey = new Hotkey();
-            TaskHotKey.WindowsKey = true;
-            TaskHotKey.KeyCode = System.Windows.Forms.Keys.T;
+			TaskHotKey.WindowsKey = true;
+			TaskHotKey.Ctrl = true;
+			TaskHotKey.KeyCode = System.Windows.Forms.Keys.T;
             TaskHotKey.HotkeyPressed += new EventHandler(TaskHotKey_HotkeyPressed);
             try
             {

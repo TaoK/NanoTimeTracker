@@ -10,7 +10,7 @@ overhead to one click and a task name/description typed in.
 
 Features:
  - System tray integration so you can see and update status without cluttering
- - Hotkey support for instant and mouse-less task entry
+ - Hotkey support for instant and mouse-less task entry (Ctrl-Win-T)
  - Grid-view of time entries, for easy review and editing
  - At-a-glance stats, including billable and non-billable time for recent periods
  - Simple Xml-based storage format
